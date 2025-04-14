@@ -11,7 +11,6 @@ import pedSim.utilities.StringEnum.RoadType;
  * options.
  */
 public class Pars {
-//	public static String stringMode = "";
 
 	// General parameters
 	public static String cityName = "Torino";
@@ -53,7 +52,6 @@ public class Pars {
 		TimePars.setTemporalPars();
 		moveRate = TimePars.STEP_DURATION * pedestrianSpeed;
 		numAgents = (int) (population * percentagePopulationAgent);
-		System.out.println(percentagePopulationAgent);
 		kmPerDay = kmPerDayPerPerson * numAgents;
 		setRoadTypeMap();
 	}
