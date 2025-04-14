@@ -11,7 +11,7 @@ import sim.field.geo.VectorLayer;
 /**
  * This class is responsible for importing various data files required for the
  * simulation based on the selected simulation parameters. It includes methods
- * for importing distances, barriers, landmarks and sight lines, road network
+ * for importing distances, barriers, buildings and sight lines, road network
  * graphs, and empirical agent groups data.
  */
 public class Import {
@@ -34,7 +34,7 @@ public class Import {
 		if (Pars.javaProject)
 			resourcePath = Pars.localPath + resourcePath;
 
-		readLandmarksAndSightLines();
+		readBuildings();
 		readBarriers();
 		// Read the street network shapefiles and create the primal and the dual graph
 		readGraphs();
@@ -48,12 +48,12 @@ public class Import {
 	private void readGraphs() throws Exception {
 
 		try {
-			String[] layerSuffixes = { "/edges", "/nodes", "/edgesDual", "/nodesDual" };
+			String[] layerSuffixes = { "_edges", "_nodes", "_edgesDual_graph", "_nodesDual_graph" };
 			VectorLayer[] vectorLayers = { PedSimCity.roads, PedSimCity.junctions, PedSimCity.intersectionsDual,
 					PedSimCity.centroids };
 
 			for (int i = 0; i < layerSuffixes.length; i++) {
-				String filePath = resourcePath + layerSuffixes[i];
+				String filePath = resourcePath + "/" + Pars.cityName + layerSuffixes[i];
 				URL fileUrl = Pars.javaProject ? new File(filePath + ".gpkg").toURI().toURL()
 						: CLASSLOADER.getResource(filePath + ".gpkg");
 				VectorLayer.readGPKG(fileUrl, vectorLayers[i]);
@@ -69,26 +69,27 @@ public class Import {
 	}
 
 	/**
-	 * Reads and imports landmarks and sight lines data for the simulation.
+	 * Reads and imports buildings data for the simulation.
 	 *
-	 * @throws Exception If an error occurs during the import process.
+	 * @throws Exception if an error occurs during the import process.
 	 */
-	private void readLandmarksAndSightLines() throws Exception {
+	private void readBuildings() throws Exception {
 		try {
-			String[] layerSuffixes = { "/landmarks" };
+			String[] layerSuffixes = { "_buildings" };
 			VectorLayer[] vectorLayers = { PedSimCity.buildings };
 
 			for (int i = 0; i < layerSuffixes.length; i++) {
-				String filePath = resourcePath + layerSuffixes[i];
+				String filePath = resourcePath + "/" + Pars.cityName + layerSuffixes[i];
+				System.out.println(filePath);
 				URL fileUrl = Pars.javaProject ? new File(filePath + ".gpkg").toURI().toURL()
 						: CLASSLOADER.getResource(filePath + ".gpkg");
 				VectorLayer.readGPKG(fileUrl, vectorLayers[i]);
 			}
 
 			PedSimCity.buildings.setID("buildingID");
-			logger.info("Landmarks and sight lines successfully imported.");
+			logger.info("Buildings successfully imported.");
 		} catch (Exception e) {
-			handleImportError("Importing Landmarks and Sight Lines Failed", e);
+			handleImportError("Importing Buildings Failed", e);
 		}
 	}
 
@@ -99,7 +100,8 @@ public class Import {
 	 */
 	private void readBarriers() throws Exception {
 		try {
-			String filePath = resourcePath + "/barriers";
+			String filePath = resourcePath + "/" + Pars.cityName + "_barriers";
+
 			URL fileUrl = Pars.javaProject ? new File(filePath + ".gpkg").toURI().toURL()
 					: CLASSLOADER.getResource(filePath + ".gpkg");
 			VectorLayer.readGPKG(fileUrl, PedSimCity.barriers);
@@ -116,6 +118,6 @@ public class Import {
 	 * @throws Exception If an error occurs during the import process.
 	 */
 	private static void handleImportError(String layerName, Exception e) {
-		logger.info(layerName);
+		logger.info(layerName + "  " + e);
 	}
 }
