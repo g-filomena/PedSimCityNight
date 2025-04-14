@@ -13,7 +13,6 @@ import java.awt.event.WindowListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import pedSim.engine.PedSimCity;
 import pedSim.parameters.Pars;
 
 /**
@@ -67,7 +66,7 @@ public class ParametersPanel extends Frame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				adjustParameters();
-				inputCityCentreRegions();
+//				inputCityCentreRegions();
 				closePanel();
 			}
 		});
@@ -104,16 +103,16 @@ public class ParametersPanel extends Frame {
 		add(localPathField);
 	}
 
-	private void inputCityCentreRegions() {
-		String[] cityCentreArray = cityCentreField.getText().split(",");
-		Integer[] cityCentreRegions;
-
-		cityCentreRegions = new Integer[cityCentreArray.length];
-		for (int i = 0; i < cityCentreArray.length; i++)
-			cityCentreRegions[i] = Integer.parseInt(cityCentreArray[i].trim());
-
-		PedSimCity.cityCentreRegionsID = cityCentreRegions;
-	}
+//	private void inputCityCentreRegions() {
+//		String[] cityCentreArray = cityCentreField.getText().split(",");
+//		Integer[] cityCentreRegions;
+//
+//		cityCentreRegions = new Integer[cityCentreArray.length];
+//		for (int i = 0; i < cityCentreArray.length; i++)
+//			cityCentreRegions[i] = Integer.parseInt(cityCentreArray[i].trim());
+//
+//		RouteChoicePars.cityCentreRegionsID = cityCentreRegions;
+//	}
 
 	/**
 	 * Adds double-interpreter field to the panel for adjusting simulation
