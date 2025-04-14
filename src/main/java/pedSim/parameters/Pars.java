@@ -53,7 +53,8 @@ public class Pars {
 		TimePars.setTemporalPars();
 		moveRate = TimePars.STEP_DURATION * pedestrianSpeed;
 		numAgents = (int) (population * percentagePopulationAgent);
-		kmPerDay = kmPerDayPerPerson * percentagePopulationAgent * percentagePopulationWalking;
+		System.out.println(percentagePopulationAgent);
+		kmPerDay = kmPerDayPerPerson * numAgents;
 		setRoadTypeMap();
 	}
 
