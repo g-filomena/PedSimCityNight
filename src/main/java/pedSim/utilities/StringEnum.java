@@ -24,7 +24,7 @@ public class StringEnum {
 	}
 
 	public enum Gender {
-		MALE, FEMALE, NON_BINARY
+		MALE, NON_MALE
 	}
 
 	public enum TimeOfDay {
