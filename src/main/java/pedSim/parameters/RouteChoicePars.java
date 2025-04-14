@@ -20,9 +20,15 @@ public class RouteChoicePars {
 
 	public Integer[] originsTmp = {};
 	public static Integer[] destinationsTmp = {};
+	public static Integer[] cityCentreRegionsID = { 0, 2, 13, 33 };
 
 	// Landmark Integration
 	public static double distanceNodeBuilding = 40.0;
 	public static double salientNodesPercentile = 0.90; // Threshold Percentile to identify salient nodes
+
+	public static double naturalBarriers = 0.49;
+	public static double naturalBarriersSD = 0.21;
+	public static double severingBarriers = 0.53;
+	public static double severingBarriersSD = 0.29;
 
 }
