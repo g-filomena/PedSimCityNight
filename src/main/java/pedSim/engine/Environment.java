@@ -95,8 +95,6 @@ public class Environment {
 			building.landUse = buildingGeometry.getStringAttribute("land_use");
 			building.DMA = buildingGeometry.getStringAttribute("DMA");
 			building.geometry = buildingGeometry;
-			building.attributes.put("globalLandmarkness", buildingGeometry.getAttributes().get("gScore_sc"));
-			building.attributes.put("localLandmarkness", buildingGeometry.getAttributes().get("lScore_sc"));
 
 			List<MasonGeometry> nearestNodes = PedSimCity.junctions
 					.featuresWithinDistance(buildingGeometry.getGeometry(), 500.0);
@@ -179,7 +177,7 @@ public class Environment {
 		List<EdgeGraph> edges = PedSimCity.network.getEdges();
 		for (EdgeGraph edge : edges) {
 			int edgeID = edge.attributes.get("edgeID").getInteger();
-			AttributeValue isLit = new AttributeValue(edge.attributes.get("lit").getInteger() != 0);
+			AttributeValue isLit = new AttributeValue(edge.attributes.get("lit_m").getInteger() != 0);
 			edge.attributes.put("lit", isLit);
 			edge.attributes.put("roadType", edge.attributes.get("highway"));
 			edge.setID(edgeID);
