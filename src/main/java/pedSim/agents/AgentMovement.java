@@ -17,8 +17,10 @@ import pedSim.engine.PedSimCity;
 import pedSim.parameters.Pars;
 import pedSim.utilities.StringEnum.Gender;
 import sim.graph.EdgeGraph;
+import sim.graph.Graph;
 import sim.graph.NodeGraph;
 import sim.routing.Astar;
+import sim.routing.AstarNight;
 import sim.routing.Route;
 
 public class AgentMovement {
@@ -42,15 +44,18 @@ public class AgentMovement {
 
 	boolean originalRoute = true;
 	boolean increaseSpeedAtNight = false;
+	Set<EdgeGraph> edgesToAvoid;
 
 	PedSimCity state;
 	Random random = new Random();
 
 	private NodeGraph currentNode;
+	private Graph network;
 
 	public AgentMovement(Agent agent) {
 		this.agent = agent;
 		this.state = agent.getState();
+		this.network = CommunityCognitiveMap.getNetwork();
 	}
 
 	/**
@@ -60,6 +65,7 @@ public class AgentMovement {
 
 		indexOnSequence = 0;
 		this.directedEdgesSequence = route.directedEdgesSequence;
+		edgesToAvoid = new HashSet<>();
 
 		// set up how to traverse this first link
 		firstDirectedEdge = directedEdgesSequence.get(indexOnSequence);
@@ -182,16 +188,23 @@ public class AgentMovement {
 		// get the one before the "bad" edge
 		NodeGraph currentNode = (NodeGraph) edgesWalkedSoFar.get(edgesWalkedSoFar.size() - 1).getToNode();
 
-		Set<EdgeGraph> edgesToAvoid = getEdgesToAvoid();
-		Route alternativeRoute = Astar.astarRoute(currentNode, agent.destinationNode,
-				CommunityCognitiveMap.getNetwork(), edgesToAvoid);
+		getEdgesToAvoid();
+		AstarNight aStarNight = new AstarNight();
+		Route alternativeRoute = aStarNight.astarRoute(currentNode, agent.destinationNode, network, edgesToAvoid,
+				agent);
 
-//		while (alternativeRoute == null) {
-//			edgesToAvoid.clear();
-//			edgesToAvoid.removeAll(CommunityCognitiveMap.nonLitNonPrimary);
-//			alternativeRoute = Astar.astarRoute(currentNode, agent.destinationNode, CommunityCognitiveMap.getNetwork(),
-//					edgesToAvoid);
-//		}
+		int iteration = 0;
+		while (alternativeRoute == null) {
+			if (iteration == 0)
+				edgesToAvoid.removeAll(CommunityCognitiveMap.edgesAlongWater);
+			else if (iteration == 1)
+				edgesToAvoid.removeAll(CommunityCognitiveMap.edgesWithinParks);
+			else if (iteration == 2)
+				edgesToAvoid.removeAll(CommunityCognitiveMap.nonLitNonPrimary);
+			alternativeRoute = Astar.astarRoute(currentNode, agent.destinationNode, CommunityCognitiveMap.getNetwork(),
+					edgesToAvoid);
+			iteration += 1;
+		}
 
 		originalRoute = false;
 		resetPath(alternativeRoute.directedEdgesSequence);
@@ -199,12 +212,16 @@ public class AgentMovement {
 
 	private Set<EdgeGraph> getEdgesToAvoid() {
 
-		Set<EdgeGraph> edgesToAvoid = new HashSet<>();
+		edgesToAvoid.clear();
 		edgesToAvoid.add(currentEdge);
 		edgesToAvoid.addAll(CommunityCognitiveMap.nonLitNonPrimary);
-		if (!isMale())
-			edgesToAvoid.addAll(CommunityCognitiveMap.edgesWithinParks);
 
+		if (!isMale()) {
+			edgesToAvoid.addAll(CommunityCognitiveMap.edgesAlongWater);
+			edgesToAvoid.addAll(CommunityCognitiveMap.edgesWithinParks);
+		}
+
+		edgesToAvoid.removeAll(agent.destinationNode.getEdges());
 		return edgesToAvoid;
 	}
 
@@ -227,88 +244,94 @@ public class AgentMovement {
 		if (CommunityCognitiveMap.litEdges.contains(currentEdge))
 			whenLit(currentEdge);
 		else
-			whenNotLit(currentEdge);
+			whenNonLit(currentEdge);
 
 	}
 
 	private void whenLit(EdgeGraph edge) {
 
-		// female avoid parks at night at planning phase.
-		if (isEdgeInPark(edge) && isMale()) {
-			increaseSpeedAtNight = true;
-			return;
-		}
-
-		// If not male, evaluate possible rerouting or speed adjustments
-		if (!isMale()) {
-
-			// If the edge is neither known nor a primary road, recompute the route
-			if (!isEdgeKnown(edge) && !isEdgePrimary(edge)) {
-				if (canReroute())
-					computeAlternativeRoute();
-				else
-					increaseSpeedAtNight = true;
-				return;
-			}
-
-			// If the edge is known and not busy/crowded, randomly choose to reroute or
-			// increase speed
-			if (!isEdgeBusyOrCrowded(edge)) {
-				if (random.nextDouble() < 0.5 && canReroute())
-					computeAlternativeRoute();
-				else
-					increaseSpeedAtNight = true;
-				return;
-			}
-		}
-		// Otherwise (male or busy/crowded known edge), continue as normal (no action
-		// needed)
+		// vulnerable avoid parks at night at planning phase.
+		if (isParkWaterMale(edge))
+			whenParkWaterMale(edge);
+		else
+			whenLitVulernable(edge);
 	}
 
-	private void whenNotLit(EdgeGraph edge) {
+	private boolean isParkWaterMale(EdgeGraph edge) {
+		return isEdgeNextToParkOrWater(edge) && isMale();
+	}
 
-		// major and primary roads are always known
-		// narrow, not known, not main road, not busy -> non-male reroute; male reroute
-		// or increase
-		if (!isEdgeKnown(edge) && !isEdgePrimary(edge) && !isEdgeBusyOrCrowded(edge)) {
-			if (isMale())
-				rerouteOrIncreaseSpeed();
-			else if (canReroute()) // female
-				computeAlternativeRoute();
-			else
-				increaseSpeedAtNight = true;
-			return;
-		}
+	private void whenParkWaterMale(EdgeGraph edge) {
+		// vulnerable avoid parks at night at planning phase.
+		if (canReroute()) {
+			edgesToAvoid.addAll(CommunityCognitiveMap.edgesAlongWater);
+			edgesToAvoid.addAll(CommunityCognitiveMap.edgesWithinParks);
+			computeAlternativeRoute();
+		} else
+			increaseSpeedAtNight = true;
+	}
 
-		// female avoid parks at night at planning phase.
-		if (isEdgeInPark(edge) && isMale()) {
+	private void whenLitVulernable(EdgeGraph edge) {
+
+		// not known, not primary, not busy -> recompute
+		if (!isEdgeKnown(edge) && !isEdgePrimary(edge) && !isEdgeCrowded(edge)) {
 			if (canReroute())
 				computeAlternativeRoute();
 			else
 				increaseSpeedAtNight = true;
-			return;
 		}
-
-		// not known but busy -> keep walking
-		if (!isEdgeKnown(edge) && isEdgeBusyOrCrowded(edge))
-			return;
-
-		// primary (primary always known)
-		if (isEdgePrimary(edge)) {
-			// if not busy, non-males increase speed
-			if (!isMale() && !isEdgeBusyOrCrowded(edge))
+		// not primary and not crowded -> reroute or increase speed
+		else if (!isEdgePrimary(edge) && !isEdgeCrowded(edge)) {
+			if (random.nextDouble() < 0.5 && canReroute())
+				computeAlternativeRoute();
+			else
 				increaseSpeedAtNight = true;
-			// otherways -> keep walking
-			return;
 		}
+	}
 
-		// known and NOT primary
-		if (isEdgeKnown(edge)) {
-			// if not busy, non-males increase speed or reroute
-			if (!isMale() && !isEdgeBusyOrCrowded(edge))
-				rerouteOrIncreaseSpeed();
+	private void whenNonLit(EdgeGraph edge) {
+
+		if (isMale())
+			nonLitMale(edge);
+		else
+			nonLitVulnerable(edge);
+	}
+
+	private void nonLitMale(EdgeGraph edge) {
+
+		if (isParkWaterMale(edge)) {
+			whenParkWaterMale(edge);
 			return;
 		}
+		// crowded -> ok
+		else if (isEdgeCrowded(edge))
+			return;
+		// not known, not primary, not crowded -> reroute or increase speed
+		else if (!isEdgeKnown(edge) && !isEdgePrimary(edge))
+			rerouteOrIncreaseSpeed();
+		// primary or known, not crowded -> ok
+		else if (isEdgePrimary(edge) || isEdgeKnown(edge))
+			return;
+	}
+
+	private void nonLitVulnerable(EdgeGraph edge) {
+
+		// not known, not primary, not crowded -> reroute
+		if (!isEdgeKnown(edge) && !isEdgePrimary(edge) && !isEdgeCrowded(edge)) {
+			if (canReroute())
+				computeAlternativeRoute();
+			else
+				increaseSpeedAtNight = true;
+		}
+		// not known but crowded -> OK
+		else if (!isEdgeKnown(edge) && isEdgeCrowded(edge))
+			return;
+		// primary but not crowded -> increase speed
+		else if (isEdgePrimary(edge) && !isEdgeCrowded(edge))
+			increaseSpeedAtNight = true;
+		// known, not primary, not crowded -> > reroute or increase speed
+		else if (isEdgeKnown(edge) && !isEdgeCrowded(edge))
+			rerouteOrIncreaseSpeed();
 	}
 
 	private void rerouteOrIncreaseSpeed() {
@@ -316,21 +339,19 @@ public class AgentMovement {
 			computeAlternativeRoute();
 		else
 			increaseSpeedAtNight = true;
-		return;
 	}
 
-	// TODO improve COMPUTATION
-	private boolean isEdgeBusyOrCrowded(EdgeGraph edge) {
-		if (edge.getAgentCount() >= calculateVolumesPercentile(80))
-			return true;
-		else
-			return false;
+	private boolean isEdgeCrowded(EdgeGraph edge) {
+
+		double volumePercentile = calculateVolumesPercentile(40);
+		return edge.getAgentCount() >= volumePercentile;
 	}
 
 	private double calculateVolumesPercentile(int percentile) {
 		// Collect volumes from edges (Set to List)
 		List<Integer> volumes = PedSimCity.edges.stream().map(EdgeGraph::getAgentCount) // Map each edge to its agent
 																						// count
+				.filter(agentCount -> agentCount > 0) // Only keep agent counts greater than 0
 				.sorted() // Sort the agent counts
 				.collect(Collectors.toList()); // Collect to a List
 
@@ -339,7 +360,11 @@ public class AgentMovement {
 		index = Math.max(0, index); // Ensure the index is within bounds
 
 		// Return the value at the calculated index
-		return volumes.get(index);
+
+		if (!volumes.isEmpty())
+			return volumes.get(index);
+		else
+			return Double.MAX_VALUE;
 	}
 
 	private boolean isEdgePrimary(EdgeGraph edge) {
@@ -348,7 +373,7 @@ public class AgentMovement {
 
 	private boolean canReroute() {
 
-		if (currentEdge.getNodes().contains(agent.destinationNode) || indexOnSequence == 0 || !originalRoute)
+		if (currentEdge.getNodes().contains(agent.destinationNode) || indexOnSequence == 0)
 			return false;
 		return true;
 
@@ -358,8 +383,9 @@ public class AgentMovement {
 		return agent.getCognitiveMap().isEdgeKnown(edge);
 	}
 
-	private boolean isEdgeInPark(EdgeGraph edge) {
-		return !CommunityCognitiveMap.edgesWithinParks.contains(edge);
+	private boolean isEdgeNextToParkOrWater(EdgeGraph edge) {
+		return CommunityCognitiveMap.edgesWithinParks.contains(edge)
+				| CommunityCognitiveMap.edgesAlongWater.contains(edge);
 	}
 
 	private boolean isMale() {
@@ -389,6 +415,7 @@ public class AgentMovement {
 		currentDirectedEdge = directedEdgesSequence.get(indexOnSequence);
 		currentEdge = (EdgeGraph) currentDirectedEdge.getEdge();
 		currentNode = (NodeGraph) firstDirectedEdge.getFromNode();
+		edgesToAvoid.clear();
 		agent.updateAgentPosition(currentNode.getCoordinate());
 	}
 
