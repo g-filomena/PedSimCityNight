@@ -2,6 +2,7 @@ package pedSim.engine;
 
 import java.util.Random;
 import java.util.logging.Logger;
+import java.util.stream.IntStream;
 
 import pedSim.agents.Agent;
 import pedSim.parameters.Pars;
@@ -26,17 +27,18 @@ public class Populate {
 	 */
 	public void populate(PedSimCity state) {
 
-		logger.info("Creating Agents. Building Their Cognitive Maps");
 		this.state = state;
 
 		// Create agents with parameter true
 		int totalAgents = Pars.numAgents;
+		logger.info("Creating " + totalAgents + " Agents. Building Their Cognitive Maps");
+		IntStream.range(0, totalAgents).parallel().forEach(agentID -> {
+			addAgent(agentID); // Must be thread-safe!
+		});
 
-		for (int agentID = 0; agentID < totalAgents; agentID++) {
-			addAgent(agentID);
-		}
-
-		logger.info("Agents created");
+		for (Agent agent : state.agentsList)
+			state.agents.addGeometry(agent.getLocation());
+		logger.info(state.agentsList.size() + " agents created");
 	}
 
 	/**
@@ -53,14 +55,13 @@ public class Populate {
 //		agentGeometry.isMovable = true;
 		agent.agentID = agentID;
 		agent.gender = assignRandomGender();
-		state.agents.addGeometry(agent.getLocation());
 		state.agentsList.add(agent);
 		agent.updateAgentLists(false, true);
 	}
 
 	public static Gender assignRandomGender() {
 		double p = new Random().nextDouble();
-		return p < 0.45 ? Gender.FEMALE : (p < 0.95 ? Gender.MALE : Gender.NON_BINARY);
+		return p < 0.55 ? Gender.NON_MALE : Gender.MALE;
 	}
 
 }
