@@ -56,8 +56,6 @@ public class PedSimCity extends SimState {
 	public static Map<Integer, EdgeGraph> edgesMap = new HashMap<>();
 	public static Map<Integer, NodeGraph> centroidsMap = new HashMap<>();
 
-	public static Integer[] cityCentreRegionsID = { 0, 13, 18, 30, 31, 46 };
-
 	public boolean isDark = false;
 
 	// OD related variables
