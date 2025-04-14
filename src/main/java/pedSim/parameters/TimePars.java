@@ -25,9 +25,9 @@ public class TimePars {
 	public static final LocalTime nightEnd = LocalTime.of(5, 30);
 
 	// Assume percentage of the population walking during peak hours
-	public static final double peakPercentage = 0.50; // 50%
-	public static final double offPeakPercentage = 0.45; // 40%
-	public static final double nightPercentage = 0.5; // 1 %
+	public static final double peakPercentage = 0.55; // 50%
+	public static final double offPeakPercentage = 0.44; // 44%
+	public static final double nightPercentage = 0.01; // 1 %
 
 	public static int stepsInPeakHours;
 	public static int stepsInOffPeak;
