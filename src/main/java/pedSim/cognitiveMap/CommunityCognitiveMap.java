@@ -59,6 +59,7 @@ public class CommunityCognitiveMap {
 	protected static Set<EdgeGraph> neighbourhoodEdges = new HashSet<>();
 	protected static Set<EdgeGraph> unknownEdges = new HashSet<>();
 	public static Set<EdgeGraph> edgesWithinParks = new HashSet<>();
+	public static Set<EdgeGraph> edgesAlongWater = new HashSet<>();
 	public static Set<EdgeGraph> litEdges = new HashSet<>();
 	public static Set<EdgeGraph> nonLitNonPrimary = new HashSet<>();
 
@@ -81,9 +82,9 @@ public class CommunityCognitiveMap {
 	 */
 	public static void setCommunityCognitiveMap() {
 
+		setCommunityNetwork(PedSimCity.network, PedSimCity.dualNetwork);
 		setBuildingsAtJunctions();
 		barriers = PedSimCity.barriers;
-		setCommunityNetwork(PedSimCity.network, PedSimCity.dualNetwork);
 		setOtherNetworks();
 	}
 
@@ -111,7 +112,7 @@ public class CommunityCognitiveMap {
 
 		cityCenterEdges = new ArrayList<>();
 
-		for (int regionID : PedSimCity.cityCentreRegionsID)
+		for (int regionID : RouteChoicePars.cityCentreRegionsID)
 			cityCenterEdges.addAll(PedSimCity.regionsMap.get(regionID).edges);
 
 		communityKnownEdges.addAll(cityCenterEdges);
