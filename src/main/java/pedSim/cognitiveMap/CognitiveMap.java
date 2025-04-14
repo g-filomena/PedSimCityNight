@@ -36,13 +36,16 @@ public class CognitiveMap extends CommunityCognitiveMap {
 		this.agent = agent;
 
 		while (homeNode == null) {
-			homeNode = NodesLookup.randomNode(CommunityCognitiveMap.getNetwork());
-			if (homeNode.getEdges().stream().anyMatch(CommunityCognitiveMap.edgesWithinParks::contains))
+			homeNode = NodesLookup.randomNodeDMA(CommunityCognitiveMap.getNetwork(), "live");
+
+			if (homeNode.getEdges().stream().anyMatch(CommunityCognitiveMap.edgesWithinParks::contains)) {
 				homeNode = null;
+				homeNode = NodesLookup.randomNode(CommunityCognitiveMap.getNetwork());
+			}
 		}
 
-		workNode = NodesLookup.randomNodeBetweenDistanceInterval(CommunityCognitiveMap.getNetwork(), homeNode, 700,
-				2000);
+		workNode = NodesLookup.randomNodeBetweenDistanceIntervalDMA(CommunityCognitiveMap.getNetwork(), homeNode, 700,
+				2000, "work");
 	}
 
 	// TODO, add edges connecting known regions..
@@ -64,7 +67,6 @@ public class CognitiveMap extends CommunityCognitiveMap {
 	public void formCognitiveMap() {
 
 		buildActivityBone();
-
 		formed = true;
 	}
 
