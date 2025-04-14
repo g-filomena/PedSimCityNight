@@ -2,6 +2,7 @@ package pedSim.routeChoice;
 
 import pedSim.agents.Agent;
 import pedSim.dijkstra.DijkstraRoadDistance;
+import pedSim.dijkstra.DijkstraRoadDistanceNight;
 import sim.graph.NodeGraph;
 import sim.routing.Route;
 
@@ -23,10 +24,14 @@ public class RoadDistancePathFinder extends PathFinder {
 	public Route roadDistance(NodeGraph originNode, NodeGraph destinationNode, Agent agent) {
 
 		this.agent = agent;
-		final DijkstraRoadDistance pathfinder = new DijkstraRoadDistance();
 
-		partialSequence = pathfinder.dijkstraAlgorithm(originNode, destinationNode, destinationNode,
-				directedEdgesToAvoid, this.agent);
+		if (agent.getState().isDark) {
+			final DijkstraRoadDistanceNight pathfinder = new DijkstraRoadDistanceNight();
+			partialSequence = pathfinder.dijkstraAlgorithm(originNode, destinationNode, this.agent);
+		} else {
+			final DijkstraRoadDistance pathfinder = new DijkstraRoadDistance();
+			partialSequence = pathfinder.dijkstraAlgorithm(originNode, destinationNode, this.agent);
+		}
 
 		partialSequence = sequenceOnCommunityNetwork(partialSequence);
 		route.directedEdgesSequence = partialSequence;
