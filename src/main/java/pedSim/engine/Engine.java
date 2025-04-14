@@ -86,7 +86,7 @@ public class Engine {
 	}
 
 	private double calculateKmCurrentDay() {
-		return Pars.getKmPerDay() * Utilities.fromDistribution(1.0, 0.15, null);
+		return Pars.getKmPerDay() * Utilities.fromDistribution(1.0, 0.10, null);
 	}
 
 }
