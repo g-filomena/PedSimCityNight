@@ -6,12 +6,10 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.PriorityQueue;
-import java.util.Set;
 
 import org.locationtech.jts.planargraph.DirectedEdge;
 
 import pedSim.agents.Agent;
-import pedSim.utilities.StringEnum.Gender;
 import sim.graph.EdgeGraph;
 import sim.graph.NodeGraph;
 import sim.routing.NodeWrapper;
@@ -25,9 +23,6 @@ import sim.routing.NodeWrapper;
  * urban subdivisions (regions, barriers).
  **/
 public class DijkstraRoadDistance extends Dijkstra {
-
-	public List<Integer> disregardedNodes = new ArrayList<>();
-	private boolean secondAttempt;
 
 	/**
 	 * Performs the Dijkstra's algorithm to find the shortest path from the origin
@@ -48,10 +43,9 @@ public class DijkstraRoadDistance extends Dijkstra {
 	 * @return An ArrayList of DirectedEdges representing the shortest path from the
 	 *         origin to the destination.
 	 */
-	public List<DirectedEdge> dijkstraAlgorithm(NodeGraph originNode, NodeGraph destinationNode,
-			NodeGraph finalDestinationNode, Set<DirectedEdge> directedEdgesToAvoid, Agent agent) {
+	public List<DirectedEdge> dijkstraAlgorithm(NodeGraph originNode, NodeGraph destinationNode, Agent agent) {
 
-		initialise(originNode, destinationNode, finalDestinationNode, agent);
+		initialise(originNode, destinationNode, agent);
 		visitedNodes = new HashSet<>();
 		unvisitedNodes = new PriorityQueue<>(Comparator.comparingDouble(this::getBest));
 		unvisitedNodes.add(this.originNode);
@@ -92,14 +86,6 @@ public class DijkstraRoadDistance extends Dijkstra {
 				continue;
 
 			EdgeGraph commonEdge = agentNetwork.getEdgeBetween(currentNode, targetNode);
-			if (edgesToAvoid.contains(commonEdge))
-				continue;
-//			if (!isEdgeKnown(commonEdge))
-//				continue;
-
-			if (!secondAttempt && agent.getState().isDark && agent.gender != Gender.MALE)
-				if (shouldAvoidEdgeAtNight(commonEdge))
-					continue;
 
 			DirectedEdge outEdge = agentNetwork.getDirectedEdgeBetween(currentNode, targetNode);
 			tentativeCost = 0.0;
@@ -126,19 +112,11 @@ public class DijkstraRoadDistance extends Dijkstra {
 		} else
 			while (nodeWrappersMap.get(step).nodeFrom != null) {
 				DirectedEdge directedEdge;
-				if (subGraph != null)
-					directedEdge = retrieveFromPrimalParentGraph(step);
-				else
-					directedEdge = nodeWrappersMap.get(step).directedEdgeFrom;
+				directedEdge = nodeWrappersMap.get(step).directedEdgeFrom;
 				step = nodeWrappersMap.get(step).nodeFrom;
 				directedEdgesSequence.add(0, directedEdge);
 			}
 
-		if (directedEdgesSequence.isEmpty()) {
-			secondAttempt = true;
-			System.out.println("secondAttempt");
-			return dijkstraAlgorithm(originNode, destinationNode, finalDestinationNode, directedEdgesToAvoid, agent);
-		}
 		return directedEdgesSequence;
 	}
 }
