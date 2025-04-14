@@ -55,6 +55,8 @@ public class BarrierIntegration {
 				waterBodies.add(Integer.valueOf(t));
 		}
 		edge.attributes.put("waterBodies", new AttributeValue(waterBodies));
+		if (!waterBodies.isEmpty())
+			CommunityCognitiveMap.edgesAlongWater.add(edge);
 
 		if (!parksString.equals("[]")) {
 			final String p = parksString.replaceAll("[^-?0-9]+", " ");
