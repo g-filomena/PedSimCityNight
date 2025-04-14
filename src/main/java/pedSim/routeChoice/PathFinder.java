@@ -1,9 +1,7 @@
 package pedSim.routeChoice;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.locationtech.jts.planargraph.DirectedEdge;
 
@@ -31,7 +29,6 @@ public class PathFinder {
 	List<NodeGraph> sequenceNodes = new ArrayList<>();
 	// need order here, that's why it's not hashset
 	List<NodeGraph> centroidsToAvoid = new ArrayList<>();
-	Set<DirectedEdge> directedEdgesToAvoid = new HashSet<>();
 
 	List<DirectedEdge> completeSequence = new ArrayList<>();
 	List<DirectedEdge> partialSequence = new ArrayList<>();
