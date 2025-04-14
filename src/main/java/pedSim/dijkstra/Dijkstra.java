@@ -1,7 +1,7 @@
 package pedSim.dijkstra;
 
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
@@ -11,10 +11,10 @@ import org.locationtech.jts.planargraph.DirectedEdge;
 import pedSim.agents.Agent;
 import pedSim.agents.AgentProperties;
 import pedSim.cognitiveMap.CommunityCognitiveMap;
+import pedSim.parameters.RouteChoicePars;
 import sim.graph.EdgeGraph;
 import sim.graph.Graph;
 import sim.graph.NodeGraph;
-import sim.graph.SubGraph;
 import sim.routing.NodeWrapper;
 import sim.routing.Route;
 import sim.util.geo.Utilities;
@@ -25,24 +25,21 @@ import sim.util.geo.Utilities;
  */
 public class Dijkstra {
 
-	NodeGraph originNode, destinationNode, previousJunction, finalDestinationNode;
+	NodeGraph originNode, destinationNode;
 	protected Set<NodeGraph> visitedNodes;
 	protected PriorityQueue<NodeGraph> unvisitedNodes;
-
-	Set<NodeGraph> centroidsToAvoid = new HashSet<>();
-	Set<DirectedEdge> directedEdgesToAvoid = new HashSet<>();
-	Set<EdgeGraph> edgesToAvoid = new HashSet<>();
 	Map<NodeGraph, NodeWrapper> nodeWrappersMap = new HashMap<>();
+
 	AgentProperties properties;
 	double tentativeCost;
 
+	protected boolean secondAttempt;
 	protected Graph agentNetwork;
-	protected Graph agentDualNetwork;
+
 //	protected Set<EdgeGraph> knownEdges;
 //	protected Set<EdgeGraph> knownDualEdges;
 //	protected Set<NodeGraph> knownNodes;
 //	protected Set<NodeGraph> knownDualNodes;
-	SubGraph subGraph = null;
 
 	Agent agent;
 	Route route = new Route();
@@ -50,8 +47,7 @@ public class Dijkstra {
 	protected static final double MAX_DEFLECTION_ANGLE = 180.00;
 	protected static final double MIN_DEFLECTION_ANGLE = 0;
 
-	protected void initialise(NodeGraph originNode, NodeGraph destinationNode, NodeGraph finalDestinationNode,
-			Agent agent) {
+	protected void initialise(NodeGraph originNode, NodeGraph destinationNode, Agent agent) {
 
 		nodeWrappersMap.clear();
 		this.agentNetwork = CommunityCognitiveMap.getNetwork();
@@ -59,18 +55,6 @@ public class Dijkstra {
 		this.properties = agent.getProperties();
 		this.originNode = originNode;
 		this.destinationNode = destinationNode;
-		this.finalDestinationNode = finalDestinationNode;
-	}
-
-	/**
-	 * Extracts edges to avoid from a set of directed edges.
-	 *
-	 * @param directedEdgesToAvoid A set of directed edges to avoid.
-	 */
-	protected void getEdgesToAvoid(Set<DirectedEdge> directedEdgesToAvoid) {
-		this.directedEdgesToAvoid = new HashSet<>(directedEdgesToAvoid);
-		for (DirectedEdge edge : this.directedEdgesToAvoid)
-			edgesToAvoid.add((EdgeGraph) edge.getEdge());
 	}
 
 	/**
@@ -83,22 +67,16 @@ public class Dijkstra {
 	 */
 	protected double costPerceptionError(NodeGraph targetNode, EdgeGraph commonEdge, boolean dual) {
 
+		// avoid parks/rivers at night
+		if (agent.getState().isDark)
+			return Utilities.fromDistribution(1.0, 0.10, null);
 		double error = Utilities.fromDistribution(1.0, 0.10, null);
-//
-//		if (positiveBarrierEffect()) {
-//			List<Integer> pBarriers = dual ? targetNode.getPrimalEdge().attributes.get("positiveBarriers").getArray()
-//					: commonEdge.attributes.get("positiveBarriers").getArray();
-//			pBarriers.retainAll(agent.getCognitiveMap().getKnownBarriersIDs());
-//			if (!pBarriers.isEmpty())
-//				error = Utilities.fromDistribution(properties.naturalBarriers, properties.naturalBarriersSD, "left");
-//		}
-//		if (negativeBarrierEffect()) {
-//			List<Integer> nBarriers = dual ? targetNode.getPrimalEdge().attributes.get("negativeBarriers").getArray()
-//					: commonEdge.attributes.get("negativeBarriers").getArray();
-//			nBarriers.retainAll(agent.getCognitiveMap().getKnownBarriersIDs());
-//			if (!nBarriers.isEmpty())
-//				error = Utilities.fromDistribution(properties.severingBarriers, properties.severingBarriersSD, "right");
-//		}
+
+		List<Integer> pBarriers = commonEdge.attributes.get("positiveBarriers").getArray();
+		if (!pBarriers.isEmpty())
+			error = Utilities.fromDistribution(RouteChoicePars.naturalBarriers, RouteChoicePars.naturalBarriersSD,
+					"left");
+
 		return error;
 	}
 
@@ -146,21 +124,15 @@ public class Dijkstra {
 		return nodeWrapper != null ? nodeWrapper.gx : Double.MAX_VALUE;
 	}
 
-	protected DirectedEdge retrieveFromPrimalParentGraph(NodeGraph step) {
-		NodeGraph nodeTo = subGraph.getParentNode(step);
-		NodeGraph nodeFrom = subGraph.getParentNode(nodeWrappersMap.get(step).nodeFrom);
-		// retrieving from Primal Network (no SubGraph)
-		return CommunityCognitiveMap.getNetwork().getDirectedEdgeBetween(nodeFrom, nodeTo);
-	}
-
 	protected boolean shouldAvoidEdgeAtNight(EdgeGraph edge) {
 
-		if (edge.getNodes().contains(finalDestinationNode))
+		if (edge.getNodes().contains(destinationNode))
 			return false;
 
 		Integer regionID = edge.getRegionID();
 		boolean isRegionKnown = agent.getCognitiveMap().isRegionKnown(regionID);
-		if (CommunityCognitiveMap.edgesWithinParks.contains(edge) || !isRegionKnown)
+		if (CommunityCognitiveMap.edgesAlongWater.contains(edge)
+				|| CommunityCognitiveMap.edgesWithinParks.contains(edge) || !isRegionKnown)
 			return true;
 		return false;
 	}
