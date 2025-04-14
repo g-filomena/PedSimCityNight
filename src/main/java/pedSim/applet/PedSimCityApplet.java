@@ -14,6 +14,7 @@ import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.logging.Logger;
+import java.util.stream.IntStream;
 
 import pedSim.engine.Engine;
 import pedSim.engine.Environment;
@@ -203,15 +204,29 @@ public class PedSimCityApplet extends Frame implements ItemListener {
 		importFiles();
 
 		Environment.prepare();
-		logger.info("Environment Prepared. About to Start Simulation");
+//		logger.info("Environment Prepared. About to Start Simulation");
+//
+//		Engine engine = new Engine();
+//		for (int jobNr = 0; jobNr < Pars.jobs; jobNr++) {
+//			jobLabel.setText("Executing Job nr.: " + jobNr);
+//			engine.executeJob(jobNr);
+//		}
+//
+//		handleEndSimulation();
+//		
 
-		Engine engine = new Engine();
-		for (int jobNr = 0; jobNr < Pars.jobs; jobNr++) {
-			jobLabel.setText("Executing Job nr.: " + jobNr);
-			engine.executeJob(jobNr);
-		}
-
+		IntStream.range(0, Pars.jobs).parallel().forEach(jobNr -> {
+			try {
+				Engine engine = new Engine(); // new instance per thread
+				logger.info("Executing Job nr.: " + jobNr);
+				engine.executeJob(jobNr);
+			} catch (Exception e) {
+				System.out.println("Error executing job " + jobNr + " " + e);
+				throw new RuntimeException(e);
+			}
+		});
 		handleEndSimulation();
+
 	}
 
 	private void importFiles() {
@@ -251,6 +266,7 @@ public class PedSimCityApplet extends Frame implements ItemListener {
 		cityName.removeAll(); // Clear existing options
 		// Add cityName options based on the selected mode
 		cityName.add("Torino");
+		cityName.add("TorinoCentre");
 		cityName.validate(); // Validate the layout to reflect changes in options
 	}
 
