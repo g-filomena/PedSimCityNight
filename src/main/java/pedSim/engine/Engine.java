@@ -35,10 +35,7 @@ public class Engine {
 			if (isNextDay(steps, currentDay)) {
 				state.flowHandler.exportFlowsData(currentDay + 1);
 				currentDay++;
-				if (currentDay % 6 == 0)
-					handleEndWeek(state);
-				else
-					handleNewDay();
+				handleNewDay();
 			}
 
 			if (nextAgentRelease == steps) {
@@ -66,7 +63,6 @@ public class Engine {
 	}
 
 	private void handleNewWeek() {
-
 		handleNewDay();
 	}
 
@@ -76,17 +72,8 @@ public class Engine {
 		currentDayReleaseManager = new AgentReleaseManager(state, kmCurrentDay);
 	}
 
-	private void handleEndWeek(PedSimCity state) {
-
-//		for (Agent agent : state.agentsList) {
-//
-////			if (agent.isLearner())
-////				agent.learning.memoryDecay();
-//		}
-	}
-
 	private double calculateKmCurrentDay() {
-		return Pars.getKmPerDay() * Utilities.fromDistribution(1.0, 0.10, null);
+		return Pars.metersPerDay * Utilities.fromDistribution(1.0, 0.10, null);
 	}
 
 }
