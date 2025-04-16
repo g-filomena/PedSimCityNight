@@ -17,8 +17,8 @@ public class Pars {
 	public static int population = 800000;
 	public static double percentagePopulationAgent = 0.20;
 	public static double percentagePopulationWalking = 0.40;
-	public static double kmPerDayPerPerson = 4.80;
-	public static double kmPerDay;
+	public static double metersPerDayPerPerson = 4000; // 4k
+	public static double metersPerDay;
 	public static int numAgents;
 
 	public static int jobs = 1;
@@ -52,8 +52,9 @@ public class Pars {
 		TimePars.setTemporalPars();
 		moveRate = TimePars.STEP_DURATION * pedestrianSpeed;
 		numAgents = (int) (population * percentagePopulationAgent);
-		kmPerDay = kmPerDayPerPerson * numAgents;
+		metersPerDay = metersPerDayPerPerson * numAgents;
 		setRoadTypeMap();
+		RouteChoicePars.setMinMaxTripDistance();
 	}
 
 	private static void setRoadTypeMap() {
@@ -62,9 +63,5 @@ public class Pars {
 		roadTypes.put(RoadType.TERTIARY, tertiary);
 		roadTypes.put(RoadType.NEIGHBOURHOOD, neighborhood);
 		roadTypes.put(RoadType.UNKNOWN, unknown);
-	}
-
-	public static double getKmPerDay() {
-		return kmPerDay * 1000; // convert to meters
 	}
 }
