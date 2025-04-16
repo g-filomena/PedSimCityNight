@@ -23,8 +23,8 @@ public class StringEnum {
 		PRIMARY, SECONDARY, TERTIARY, NEIGHBOURHOOD, UNKNOWN
 	}
 
-	public enum Gender {
-		MALE, NON_MALE
+	public enum Vulnerable {
+		VULNERABLE, NON_VULNERABLE
 	}
 
 	public enum TimeOfDay {
