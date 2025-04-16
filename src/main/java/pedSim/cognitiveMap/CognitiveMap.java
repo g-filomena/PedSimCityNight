@@ -48,7 +48,6 @@ public class CognitiveMap extends CommunityCognitiveMap {
 				2000, "work");
 	}
 
-	// TODO, add edges connecting known regions..
 	private void buildActivityBone() {
 		NodeGraph[] knownNodes = { homeNode, workNode };
 		List<EdgeGraph> edges = new ArrayList<>();
@@ -72,18 +71,6 @@ public class CognitiveMap extends CommunityCognitiveMap {
 
 	public NodeGraph getHomeNode() {
 		return homeNode;
-	}
-
-	public NodeGraph getWorkNode() {
-		return workNode;
-	}
-
-	public Set<Integer> getKnownEdges() {
-		return new HashSet<>(knownEdges);
-	}
-
-	public Set<Integer> getKnownRegions() {
-		return knownRegions;
 	}
 
 	public boolean isRegionKnown(Integer regionID) {
