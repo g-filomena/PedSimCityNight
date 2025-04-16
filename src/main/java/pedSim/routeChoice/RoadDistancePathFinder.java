@@ -1,5 +1,10 @@
 package pedSim.routeChoice;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.locationtech.jts.planargraph.DirectedEdge;
+
 import pedSim.agents.Agent;
 import pedSim.dijkstra.DijkstraRoadDistance;
 import pedSim.dijkstra.DijkstraRoadDistanceNight;
@@ -10,7 +15,13 @@ import sim.routing.Route;
  * A pathfinder for road-distance based route calculations. This class extends
  * the functionality of the base class PathFinder.
  */
-public class RoadDistancePathFinder extends PathFinder {
+public class RoadDistancePathFinder {
+
+	Agent agent;
+	Route route = new Route();
+	NodeGraph originNode, destinationNode;
+	List<DirectedEdge> completeSequence = new ArrayList<>();
+	List<DirectedEdge> partialSequence = new ArrayList<>();
 
 	/**
 	 * Formulates a route based on road distance between the given origin and
@@ -33,7 +44,6 @@ public class RoadDistancePathFinder extends PathFinder {
 			partialSequence = pathfinder.dijkstraAlgorithm(originNode, destinationNode, this.agent);
 		}
 
-		partialSequence = sequenceOnCommunityNetwork(partialSequence);
 		route.directedEdgesSequence = partialSequence;
 		route.computeRouteSequences();
 		return route;
