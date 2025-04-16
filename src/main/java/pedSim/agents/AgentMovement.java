@@ -15,7 +15,7 @@ import org.locationtech.jts.planargraph.DirectedEdge;
 import pedSim.cognitiveMap.CommunityCognitiveMap;
 import pedSim.engine.PedSimCity;
 import pedSim.parameters.Pars;
-import pedSim.utilities.StringEnum.Gender;
+import pedSim.utilities.StringEnum.Vulnerable;
 import sim.graph.EdgeGraph;
 import sim.graph.Graph;
 import sim.graph.NodeGraph;
@@ -216,7 +216,7 @@ public class AgentMovement {
 		edgesToAvoid.add(currentEdge);
 		edgesToAvoid.addAll(CommunityCognitiveMap.nonLitNonPrimary);
 
-		if (!isMale()) {
+		if (isVulnerable()) {
 			edgesToAvoid.addAll(CommunityCognitiveMap.edgesAlongWater);
 			edgesToAvoid.addAll(CommunityCognitiveMap.edgesWithinParks);
 		}
@@ -251,17 +251,17 @@ public class AgentMovement {
 	private void whenLit(EdgeGraph edge) {
 
 		// vulnerable avoid parks at night at planning phase.
-		if (isParkWaterMale(edge))
-			whenParkWaterMale(edge);
+		if (isParkWaterNonVulnerable(edge))
+			whenParkWater(edge);
 		else
 			whenLitVulernable(edge);
 	}
 
-	private boolean isParkWaterMale(EdgeGraph edge) {
-		return isEdgeNextToParkOrWater(edge) && isMale();
+	private boolean isParkWaterNonVulnerable(EdgeGraph edge) {
+		return isEdgeNextToParkOrWater(edge) && !isVulnerable();
 	}
 
-	private void whenParkWaterMale(EdgeGraph edge) {
+	private void whenParkWater(EdgeGraph edge) {
 		// vulnerable avoid parks at night at planning phase.
 		if (canReroute()) {
 			edgesToAvoid.addAll(CommunityCognitiveMap.edgesAlongWater);
@@ -291,16 +291,16 @@ public class AgentMovement {
 
 	private void whenNonLit(EdgeGraph edge) {
 
-		if (isMale())
-			nonLitMale(edge);
-		else
+		if (isVulnerable())
 			nonLitVulnerable(edge);
+		else
+			nonLit(edge);
 	}
 
-	private void nonLitMale(EdgeGraph edge) {
+	private void nonLit(EdgeGraph edge) {
 
-		if (isParkWaterMale(edge)) {
-			whenParkWaterMale(edge);
+		if (isParkWaterNonVulnerable(edge)) {
+			whenParkWater(edge);
 			return;
 		}
 		// crowded -> ok
@@ -373,7 +373,7 @@ public class AgentMovement {
 
 	private boolean canReroute() {
 
-		if (currentEdge.getNodes().contains(agent.destinationNode) || indexOnSequence == 0)
+		if (currentEdge.getNodes().contains(agent.destinationNode) || indexOnSequence == 0 || !originalRoute)
 			return false;
 		return true;
 
@@ -385,11 +385,11 @@ public class AgentMovement {
 
 	private boolean isEdgeNextToParkOrWater(EdgeGraph edge) {
 		return CommunityCognitiveMap.edgesWithinParks.contains(edge)
-				| CommunityCognitiveMap.edgesAlongWater.contains(edge);
+				|| CommunityCognitiveMap.edgesAlongWater.contains(edge);
 	}
 
-	private boolean isMale() {
-		return agent.gender.equals(Gender.MALE);
+	private boolean isVulnerable() {
+		return agent.vulnerable.equals(Vulnerable.VULNERABLE);
 	}
 
 	private void updateCounts() {
