@@ -30,10 +30,10 @@ public class ParametersPanel extends Frame {
 
 	TextField cityCentreField = new TextField();
 
-	String[] doubleStrings = { "% of Population to be simulated from 0.0 - 1.0", "Average Km walked a day",
-			"% of Population walking", };
+	String[] doubleStrings = { "% of Population to be simulated from 0.0 - 1.0",
+			"Average nr of meters walked a day, per person", "% of Population walking", };
 
-	Double defaultValues[] = { Pars.percentagePopulationAgent, Pars.kmPerDayPerPerson,
+	Double defaultValues[] = { Pars.percentagePopulationAgent, Pars.metersPerDayPerPerson,
 			Pars.percentagePopulationWalking };
 
 	/**
