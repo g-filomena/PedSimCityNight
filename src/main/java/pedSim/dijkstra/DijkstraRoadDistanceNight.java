@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 import org.locationtech.jts.planargraph.DirectedEdge;
 
 import pedSim.agents.Agent;
-import pedSim.utilities.StringEnum.Gender;
+import pedSim.utilities.StringEnum.Vulnerable;
 import sim.graph.EdgeGraph;
 import sim.graph.NodeGraph;
 import sim.routing.NodeWrapper;
@@ -89,7 +89,7 @@ public class DijkstraRoadDistanceNight extends Dijkstra {
 		if (!secondAttempt) {
 			validNeighbors = adjacentNodes.stream().filter(targetNode -> {
 				EdgeGraph edge = agentNetwork.getEdgeBetween(currentNode, targetNode);
-				return (agent.gender == Gender.MALE || !shouldAvoidEdgeAtNight(edge))
+				return (agent.vulnerable == Vulnerable.NON_VULNERABLE || !shouldAvoidEdgeAtNight(edge))
 						&& !disregardedNodes.contains(targetNode); // Exclude disregarded nodes
 			}).collect(Collectors.toList());
 
