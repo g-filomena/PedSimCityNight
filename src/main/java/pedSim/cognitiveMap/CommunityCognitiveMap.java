@@ -121,9 +121,6 @@ public class CommunityCognitiveMap {
 				communityNetwork.getSalientNodes(RouteChoicePars.salientNodesPercentile).keySet());
 		communityKnownEdges.addAll(GraphUtils.edgesFromNodes(communityKnownNodes));
 
-//		Islands islands = new Islands(communityNetwork);
-//		communityKnownEdges = islands.mergeConnectedIslands(communityKnownEdges);
-
 		for (NodeGraph node : communityNetwork.getNodes()) {
 			if (proportionUnknownEdges(node) == 1.0)
 				unknownNodes.add(node);
@@ -151,8 +148,6 @@ public class CommunityCognitiveMap {
 		nonLitNonPrimary = communityNetwork.getEdges().stream()
 				.filter(edge -> !litEdges.contains(edge) && !communityKnownEdges.contains(edge))
 				.collect(Collectors.toSet());
-
-//		destinationCandidates = NodesLookup.getCandidatesByDMA(communityNetwork.getNodes(), "workOrVisit");
 	}
 
 	private static double proportionUnknownEdges(NodeGraph node) {
