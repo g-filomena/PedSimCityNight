@@ -7,7 +7,7 @@ import java.util.stream.IntStream;
 import pedSim.agents.Agent;
 import pedSim.parameters.Pars;
 import pedSim.utilities.LoggerUtil;
-import pedSim.utilities.StringEnum.Gender;
+import pedSim.utilities.StringEnum.Vulnerable;
 
 /**
  * The Populate class is responsible for generating test agents, building the OD
@@ -51,17 +51,15 @@ public class Populate {
 	private void addAgent(int agentID) {
 
 		Agent agent = new Agent(this.state);
-//		MasonGeometry agentGeometry = agent.getGeometry();
-//		agentGeometry.isMovable = true;
 		agent.agentID = agentID;
-		agent.gender = assignRandomGender();
+		agent.vulnerable = assignRandomVulernability();
 		state.agentsList.add(agent);
 		agent.updateAgentLists(false, true);
 	}
 
-	public static Gender assignRandomGender() {
+	public static Vulnerable assignRandomVulernability() {
 		double p = new Random().nextDouble();
-		return p < 0.55 ? Gender.NON_MALE : Gender.MALE;
+		return p < 0.55 ? Vulnerable.NON_VULNERABLE : Vulnerable.VULNERABLE;
 	}
 
 }
