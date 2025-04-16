@@ -1,6 +1,5 @@
 package pedSim.agents;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -40,7 +39,6 @@ public class Agent implements Steppable {
 	// Initial Attributes
 	public NodeGraph originNode = null;
 	public NodeGraph destinationNode = null;
-
 	final AtomicBoolean reachedDestination = new AtomicBoolean(false);
 
 	private AgentProperties agentProperties;
@@ -58,7 +56,8 @@ public class Agent implements Steppable {
 	private double distanceNextDestination = 0.0;
 	public double kmWalkedDay = 0.0;
 
-	public StringEnum.Gender gender;
+	public StringEnum.Vulnerable vulnerable;
+	private Graph agentNetwork;
 
 	/**
 	 * Constructor Function. Creates a new agent with the specified agent
@@ -76,6 +75,7 @@ public class Agent implements Steppable {
 		currentLocation = new MasonGeometry(fact.createPoint(new Coordinate(10, 10)));
 		currentLocation.isMovable = true;
 		updateAgentPosition(cognitiveMap.getHomeNode().getCoordinate());
+		this.agentNetwork = CommunityCognitiveMap.getNetwork();
 	}
 
 	public Agent() {
@@ -121,7 +121,6 @@ public class Agent implements Steppable {
 			reachedDestination.set(true);
 			return;
 		}
-
 		planRoute();
 		agentMovement = new AgentMovement(this);
 		agentMovement.initialisePath(route);
@@ -136,7 +135,6 @@ public class Agent implements Steppable {
 	}
 
 	private void startWalkingAlone() {
-
 		destinationNode = null;
 		status = AgentStatus.WALKING_ALONE;
 		updateAgentLists(true, false);
@@ -153,9 +151,8 @@ public class Agent implements Steppable {
 		if (isWalkingAlone())
 			originNode = cognitiveMap.getHomeNode();
 		else if (isGoingHome()) {
-			if (currentLocation.getGeometry().getCoordinate() != lastDestination.getCoordinate()) {
+			if (currentLocation.getGeometry().getCoordinate() != lastDestination.getCoordinate())
 				currentLocation.geometry = lastDestination.getMasonGeometry().geometry;
-			}
 			originNode = lastDestination;
 		}
 	}
@@ -170,26 +167,37 @@ public class Agent implements Steppable {
 
 	private void randomDestination() {
 
+		// Initialise limits for distance calculation
 		double lowerLimit = distanceNextDestination * 0.90;
-		double upperLimit = distanceNextDestination;
-		Graph network = CommunityCognitiveMap.getNetwork();
+		double upperLimit = distanceNextDestination * 1.10;
 
-		List<NodeGraph> candidates = new ArrayList<NodeGraph>();
+		// Get the network graph from the cognitive map
+
+		// Loop until a valid destination is found
 		while (destinationNode == null) {
-			candidates = NodesLookup.getNodesBetweenDistanceInterval(network, originNode, lowerLimit, upperLimit);
-//			candidates.retainAll(getCognitiveMap().getKnownNodes());
-			lowerLimit = lowerLimit * 0.90;
-			upperLimit = upperLimit * 1.10;
 
-//		List<NodeGraph> DMAcandidates = new ArrayList<>(candidates);
-//		DMAcandidates.retainAll(CommunityCognitiveMap.destinationCandidates);
-//		if (DMAcandidates.isEmpty())
-//			DMAcandidates = candidates;
-			if (candidates.isEmpty())
-				continue;
-			destinationNode = NodesLookup.randomNodeFromList(candidates);
-			if (destinationNode.getEdges().stream().anyMatch(CommunityCognitiveMap.edgesWithinParks::contains))
-				destinationNode = null;
+			// Get candidate nodes between the current distance range
+			List<NodeGraph> destinationCandidates = NodesLookup.getNodesBetweenDistanceInterval(agentNetwork,
+					originNode, lowerLimit, upperLimit);
+
+			if (destinationCandidates.isEmpty()) {
+				// Skip this iteration and adjust the limits if no candidates found
+				lowerLimit *= 0.90;
+				upperLimit *= 1.10;
+				continue; // Continue with the next loop iteration
+			}
+
+			// Select a random destination node from the list of candidates
+			destinationNode = NodesLookup.randomNodeFromList(destinationCandidates);
+
+			// If it's dark, filter out destination nodes that lie in parks
+			if (state.isDark
+					&& destinationNode.getEdges().stream().anyMatch(CommunityCognitiveMap.edgesWithinParks::contains)) {
+				destinationNode = null; // Set destination to null and try again
+				// Adjust the distance range for the next iteration
+				lowerLimit *= 0.90;
+				upperLimit *= 1.10;
+			}
 		}
 	}
 
@@ -197,10 +205,6 @@ public class Agent implements Steppable {
 
 		reachedDestination.set(false);
 		updateAgentPosition(destinationNode.getCoordinate());
-
-		if ((destinationNode.getID() != originNode.getID()) && route.getLineString().getLength() > 10) {
-//			learning.updateAgentMemory(route);
-		}
 
 		updateAgentLists(false, destinationNode == cognitiveMap.getHomeNode());
 		originNode = null;
@@ -296,13 +300,6 @@ public class Agent implements Steppable {
 		if (state.agentsList.isEmpty())
 			state.finish();
 	}
-
-	/**
-	 * Updates data related to the volumes on the segments traversed.
-	 */
-//	public void updateData() {
-//		state.flowHandler.updateFlowsData(this, route);
-//	}
 
 	/**
 	 * Gets the geometry representing the agent's location.
