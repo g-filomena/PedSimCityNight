@@ -10,8 +10,8 @@ import pedSim.utilities.LoggerUtil;
 import pedSim.utilities.StringEnum.Vulnerable;
 
 /**
- * The Populate class is responsible for generating test agents, building the OD
- * matrix, and populating empirical groups for pedestrian simulation.
+ * The Populate class is responsible for generating agents, building the OD
+ * matrix, and populating empirical groups for pedestria the simulation.
  */
 public class Populate {
 
@@ -20,8 +20,9 @@ public class Populate {
 	private static final Logger logger = LoggerUtil.getLogger();
 
 	/**
-	 * Populates test agents, OD matrix, and empirical groups for pedestrian
-	 * simulation.
+	 * Populates agents, OD matrix, for the simulation. It creates a set of agents
+	 * with a randomly assigned vulnerability status and updates their cognitive
+	 * maps. The agents are then added to the simulation state.
 	 *
 	 * @param state The PedSimCity simulation state.
 	 */
@@ -42,11 +43,11 @@ public class Populate {
 	}
 
 	/**
-	 * Adds an agent to the simulation.
+	 * Adds a new agent to the simulation with a randomly assigned vulnerability
+	 * status. The agent is added to the list of agents and its cognitive map is
+	 * initialized.
 	 *
-	 * @param agent        The agent to be added.
-	 * @param agentID      The identifier of the agent.
-	 * @param thisAgentODs The OD matrix for this agent.
+	 * @param agentID The identifier of the agent to be added.
 	 */
 	private void addAgent(int agentID) {
 
@@ -57,9 +58,14 @@ public class Populate {
 		agent.updateAgentLists(false, true);
 	}
 
+	/**
+	 * Assigns a random vulnerability status (either vulnerable or non-vulnerable)
+	 * to an agent with a 55% chance of being vulnerable.
+	 *
+	 * @return A randomly assigned vulnerability status.
+	 */
 	public static Vulnerable assignRandomVulernability() {
 		double p = new Random().nextDouble();
-		return p < 0.55 ? Vulnerable.NON_VULNERABLE : Vulnerable.VULNERABLE;
+		return p < 0.55 ? Vulnerable.VULNERABLE : Vulnerable.NON_VULNERABLE;
 	}
-
 }
