@@ -36,7 +36,6 @@ public class Import {
 
 		readBuildings();
 		readBarriers();
-		// Read the street network shapefiles and create the primal and the dual graph
 		readGraphs();
 	}
 
@@ -113,9 +112,11 @@ public class Import {
 	}
 
 	/**
-	 * Imports empirical agent groups data for the simulation.
+	 * Handles errors that occur during the import of a layer. It logs the layer
+	 * name and the exception that occurred.
 	 *
-	 * @throws Exception If an error occurs during the import process.
+	 * @param layerName The name of the layer that caused the error.
+	 * @param e         The exception that was thrown during the import process.
 	 */
 	private static void handleImportError(String layerName, Exception e) {
 		logger.info(layerName + "  " + e);
