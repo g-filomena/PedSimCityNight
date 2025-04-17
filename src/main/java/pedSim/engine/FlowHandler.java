@@ -24,6 +24,12 @@ public class FlowHandler {
 	public List<RouteData> routesData = new ArrayList<>();
 	public int job;
 
+	/**
+	 * Constructor for the FlowHandler class.
+	 *
+	 * @param job   The job ID for the simulation.
+	 * @param state The current simulation state.
+	 */
 	public FlowHandler(int job, PedSimCity state) {
 		initializeEdgeVolumes();
 		this.job = job;
@@ -52,11 +58,10 @@ public class FlowHandler {
 	 * Updates the edge data on the basis of the passed agent's route and its edges
 	 * sequence.
 	 *
-	 * @param agent                 The agent for which edge data is updated.
-	 * @param directedEdgesSequence The sequence of directed edges travelled by the
-	 *                              agent.
+	 * @param agent The agent for which edge data is updated.
+	 * @param route The route taken by the agent.
+	 * @param night Boolean flag indicating whether it is night or day.
 	 */
-
 	public synchronized void updateFlowsData(Agent agent, Route route, boolean night) {
 
 		String attribute = TimeOfDay.DAY.toString();
@@ -73,6 +78,12 @@ public class FlowHandler {
 		routesData.add(routeData);
 	}
 
+	/**
+	 * Exports the flows data for the specified day.
+	 *
+	 * @param day The day for which the flow data should be exported.
+	 * @throws Exception if there is an error during the export process.
+	 */
 	public void exportFlowsData(int day) throws Exception {
 		Exporter exporter = new Exporter(this);
 		exporter.savePedestrianVolumes(day);
@@ -83,7 +94,9 @@ public class FlowHandler {
 	/**
 	 * Creates and initialises a new RouteData object for the given agent.
 	 *
-	 * @param agent The agent for which route data is created.
+	 * @param agent     The agent for which route data is created.
+	 * @param route     The route taken by the agent.
+	 * @param attribute The time attribute (day or night) for the route.
 	 * @return A RouteData object containing route information.
 	 */
 	private RouteData createRouteData(Agent agent, Route route, String attribute) {
@@ -94,5 +107,4 @@ public class FlowHandler {
 		routeData.scenario = attribute;
 		return routeData;
 	}
-
 }
