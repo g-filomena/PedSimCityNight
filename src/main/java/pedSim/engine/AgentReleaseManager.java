@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import pedSim.agents.Agent;
 import pedSim.parameters.RouteChoicePars;
@@ -16,6 +17,11 @@ import pedSim.parameters.TimePars;
 import pedSim.utilities.LoggerUtil;
 import sim.util.geo.Utilities;
 
+/**
+ * The AgentReleaseManager class handles the release of agents for the
+ * pedestrian simulation, distributing the total expected walking distance for
+ * agents during a given time period.
+ */
 public class AgentReleaseManager {
 
 	private static final Logger logger = LoggerUtil.getLogger();
@@ -28,6 +34,14 @@ public class AgentReleaseManager {
 	private double expectedKmWalkedSoFarToday;
 	private double kmWalkedSoFarToday;
 
+	/**
+	 * Constructor for AgentReleaseManager.
+	 * 
+	 * @param state        the PedSimCity instance representing the simulation
+	 *                     state.
+	 * @param kmCurrentDay the current expected walking distance for the day (in
+	 *                     meters).
+	 */
 	public AgentReleaseManager(PedSimCity state, Double kmCurrentDay) {
 		this.state = state;
 		this.kmCurrentDay = kmCurrentDay;
@@ -37,6 +51,12 @@ public class AgentReleaseManager {
 		kmWalkedSoFarToday = 0.0;
 	}
 
+	/**
+	 * Releases agents to start walking based on the calculated walking distances
+	 * for the day.
+	 * 
+	 * @param steps the current simulation step count.
+	 */
 	public void releaseAgents(double steps) {
 
 		currentTime = TimePars.getTime(steps);
@@ -57,9 +77,18 @@ public class AgentReleaseManager {
 		expectedKmWalkedSoFarToday += kmToAllocate;
 	}
 
+	/**
+	 * Releases a set of agents to walk a specific distance, based on the kilometers
+	 * to allocate. The number of agents to release is calculated based on the
+	 * expected distance and the average trip distance. After selecting the agents,
+	 * the distance is allocated to them and their activities are updated.
+	 * 
+	 * @param kmToAllocate the total kilometres to be allocated for the selected
+	 *                     agents to walk.
+	 */
 	private void releaseAgentsKm(double kmToAllocate) {
 
-		int agentsExpectedToWalk = Math.max(1, (int) (kmToAllocate / RouteChoicePars.avgTripDistance)); // Ensure at
+		int agentsExpectedToWalk = Math.max(1, (int) (kmToAllocate / RouteChoicePars.avgTripDistance));
 
 		Set<Agent> agentsAtHome = new HashSet<>(state.agentsAtHome);// least one
 		// agent
@@ -70,7 +99,10 @@ public class AgentReleaseManager {
 			agent.nextActivity();
 	}
 
-	// Uncomment and adapt if the time-based logging is needed
+	/**
+	 * Logs the current walking agent statistics, including the number of agents
+	 * walking, expected versus walked kilometers, and whether it is night or not.
+	 */
 	private void logWalkingAgents() {
 		logger.info(
 				String.format("TIME: %02d:%02d | Agents walking: %d | Expected Km: %.1f vs Walked Km: %.1f | Night: %s",
@@ -78,59 +110,88 @@ public class AgentReleaseManager {
 						expectedKmWalkedSoFarToday / 1000.0, kmWalkedSoFarToday / 1000.0, state.isDark ? "Yes" : "No"));
 	}
 
+	/**
+	 * Allocates the specified walking distance across a set of agents using
+	 * parallel processing. Each agent gets a random variability applied to the
+	 * allocated distance, ensuring they stay within defined minimum and maximum
+	 * limits.
+	 * 
+	 * @param agentSet     the set of agents to which the distance will be
+	 *                     allocated.
+	 * @param kmToAllocate the total kilometers to be allocated to agents.
+	 */
 	private void allocateKmAcrossAgents(Set<Agent> agentSet, Double kmToAllocate) {
 
-		// Calculate the base km per agent for this step interval
-		double baseKmPerAgent = kmToAllocate / agentSet.size();
+		// Apply randomisation for variability (+/- 30%) using parallelStream
+		agentSet.parallelStream().forEach(agent -> {
+			double variabilityFactor = Utilities.fromDistribution(1.00, 0.30, null); // Variability (+/- 30%)
+			double kmToWalk = RouteChoicePars.avgTripDistance * variabilityFactor;
 
-		// Apply randomisation for variability (+/- 30%)
-		for (Agent agent : agentSet) {
-			double variabilityFactor = Utilities.fromDistribution(0.70, 0.30, null); // 0.70 as more will be walked
-			double kmToWalk = baseKmPerAgent * variabilityFactor;
+			// Ensure kmToWalk is within the defined boundaries
 			if (kmToWalk < RouteChoicePars.minTripDistance)
 				kmToWalk = RouteChoicePars.minTripDistance;
 			else if (kmToWalk > RouteChoicePars.maxTripDistance)
 				kmToWalk = RouteChoicePars.maxTripDistance;
 
-			// this guide the selection of the destination for the agent, it is divided by
-			// two as the agent will go back home
-
+			// This guides the selection of the destination for the agent, divided by two as
+			// the agent will go back home
 			agent.setDistanceNextDestination(kmToWalk);
-			kmToAllocate -= kmToWalk;
-			if (kmToAllocate < RouteChoicePars.minTripDistance)
-				break;
-		}
+		});
 	}
 
+	/**
+	 * Selects a specified number of agents randomly, with a weighted probability
+	 * towards agents that have walked less distance. The selection is done using
+	 * parallel streams to improve performance.
+	 * 
+	 * @param homeAgents the set of home agents to select from.
+	 * @param nrAgents   the number of agents to select.
+	 * @return a set of randomly selected agents.
+	 */
 	private Set<Agent> selectRandomAgents(Set<Agent> homeAgents, int nrAgents) {
 
 		if (nrAgents >= homeAgents.size())
 			return homeAgents;
 
 		List<Agent> agents = new ArrayList<>(homeAgents);
-		// Sort agents by kmWalked in ascending order (less walked first)
-		agents.sort(Comparator.comparingDouble(Agent::getTotalKmWalked));
+		// Sort agents by kmWalked in ascending order (less walked first) using parallel
+		// sort
+		agents.parallelStream().sorted(Comparator.comparingDouble(Agent::getTotalKmWalked))
+				.collect(Collectors.toList());
 
-		Set<Agent> selectedAgents = new HashSet<>();
-		for (int i = 0; i < nrAgents; i++) {
-			// Weighted selection: lower kmWalked has a higher probability
-			int weightedIndex = (int) (Math.pow(random.nextDouble(), 1.5) * agents.size());
-			selectedAgents.add(agents.get(weightedIndex));
-		}
+		Set<Agent> selectedAgents = agents.parallelStream().limit(nrAgents) // Select only the first 'nrAgents' after
+																			// sorting
+				.map(agent -> {
+					// Weighted selection: lower km-Walked has a higher probability
+					int weightedIndex = (int) (Math.pow(random.nextDouble(), 1.5) * agents.size());
+					return agents.get(weightedIndex);
+				}).collect(Collectors.toSet());
 
 		return selectedAgents;
 	}
 
+	/**
+	 * Computes the total kilometers walked by all agents in the simulation up to
+	 * the current time.
+	 * 
+	 * @return the total kilometers walked by all agents.
+	 */
 	private double computeKmWalkedSoFar() {
-		return state.agentsList.stream().mapToDouble(Agent::getKmWalkedDay).sum(); // Ensure the sum is computed and
-																					// returned
+		return state.agentsList.stream().mapToDouble(Agent::getKmWalkedDay).sum();
 	}
 
+	/**
+	 * Resets the kmWalkedDay attribute for all agents in the simulation to zero.
+	 */
 	private void resetKmWalkedSoFar() {
-		// Reset kmWalkedDay for all agents
 		state.agentsList.forEach(agent -> agent.kmWalkedDay = 0.0);
 	}
 
+	/**
+	 * Checks if the current time is considered "night" in the simulation.
+	 * 
+	 * @return true if the current time is night, false otherwise.
+	 */
 	private boolean isNight() {
 		LocalTime now = currentTime.toLocalTime();
 		return now.isAfter(LocalTime.of(18, 0)) || (now.isAfter(LocalTime.MIDNIGHT) && now.isBefore(TimePars.nightEnd));
