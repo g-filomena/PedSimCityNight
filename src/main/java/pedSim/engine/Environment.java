@@ -26,14 +26,12 @@ import sim.util.geo.AttributeValue;
 import sim.util.geo.MasonGeometry;
 
 /**
- * The Environment class is responsible for preparing the simulation
- * environment, including junctions, buildings, barriers, and regions.
+ * The Environment class is responsible for preparing the simulation environment, including junctions, buildings, barriers, and regions.
  */
 public class Environment {
 
 	/**
-	 * Prepares the simulation environment by initializing junctions, buildings,
-	 * barriers, attributes, dual graph, and regions (if barriers are present).
+	 * Prepares the simulation environment by initialising junctions, buildings, barriers, attributes, dual graph, and regions (if barriers are present).
 	 */
 	public static void prepare() {
 
@@ -60,7 +58,6 @@ public class Environment {
 		List<MasonGeometry> geometries = PedSimCity.junctions.getGeometries();
 
 		for (final MasonGeometry nodeGeometry : geometries) {
-			// street junctions and betweenness centrality
 			final NodeGraph node = PedSimCity.network.findNode(nodeGeometry.geometry.getCoordinate());
 			node.setID(nodeGeometry.getIntegerAttribute("nodeID"));
 			node.setMasonGeometry(nodeGeometry);
@@ -72,6 +69,9 @@ public class Environment {
 		createEdgesMap();
 	}
 
+	/**
+	 * Sets the centrality score of the node based on the attributes provided.
+	 */
 	static private void setCentralityNode(MasonGeometry nodeGeometry, NodeGraph node) {
 
 		double centrality = Double.MAX_VALUE;
@@ -84,7 +84,7 @@ public class Environment {
 	}
 
 	/**
-	 * Landmarks: Assign landmark scores to buildings.
+	 * Buildings: Prepare buildings layer.
 	 */
 	static private void prepareBuildings() {
 
@@ -137,11 +137,6 @@ public class Environment {
 
 		int gatewayID = 1;
 		for (NodeGraph node : PedSimCity.nodesMap.values()) {
-
-			if (node.getMasonGeometry().getIntegerAttribute("gateway") == 0) {
-				PedSimCity.startingNodes.add(node.getMasonGeometry());
-				continue;
-			}
 
 			int regionID = node.getRegionID();
 			for (EdgeGraph bridge : node.getEdges()) {
@@ -245,6 +240,9 @@ public class Environment {
 
 	}
 
+	/**
+	 * Prepares regions by assigning edges to corresponding regions and preparing subgraphs.
+	 */
 	private static void prepareRegions() {
 
 		List<EdgeGraph> edges = PedSimCity.network.getEdges();
@@ -292,7 +290,7 @@ public class Environment {
 	 *
 	 * @param originNode      The first node.
 	 * @param destinationNode The second node.
-	 * @return A list of buildings.
+	 * @return List of MasonGeometry objects representing buildings.
 	 */
 	public List<MasonGeometry> getBuildings(NodeGraph originNode, NodeGraph destinationNode) {
 		Geometry smallestCircle = GraphUtils
@@ -304,8 +302,7 @@ public class Environment {
 	 * Get buildings within a specified region.
 	 *
 	 * @param region The region for which buildings are to be retrieved.
-	 * @return An ArrayList of MasonGeometry objects representing buildings within
-	 *         the region.
+	 * @return A List of MasonGeometry objects representing buildings within the region.
 	 */
 	public List<MasonGeometry> getBuildingsWithinRegion(Region region) {
 		VectorLayer regionNetwork = region.regionNetwork;
