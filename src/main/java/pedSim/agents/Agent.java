@@ -15,6 +15,7 @@ import pedSim.parameters.TimePars;
 import pedSim.routeChoice.RoutePlanner;
 import pedSim.utilities.StringEnum;
 import pedSim.utilities.StringEnum.AgentStatus;
+import pedSim.utilities.StringEnum.Vulnerable;
 import sim.engine.SimState;
 import sim.engine.Steppable;
 import sim.engine.Stoppable;
@@ -25,8 +26,7 @@ import sim.routing.Route;
 import sim.util.geo.MasonGeometry;
 
 /**
- * This class represents an agent in the pedestrian simulation. Agents move
- * along paths between origin and destination nodes.
+ * This class represents an agent in the pedestrian simulation. Agents move along paths between origin and destination nodes.
  */
 public class Agent implements Steppable {
 
@@ -60,8 +60,7 @@ public class Agent implements Steppable {
 	private Graph agentNetwork;
 
 	/**
-	 * Constructor Function. Creates a new agent with the specified agent
-	 * properties.
+	 * Constructor Function. Creates a new agent with the specified agent properties.
 	 *
 	 * @param state the PedSimCity simulation state.
 	 */
@@ -87,8 +86,7 @@ public class Agent implements Steppable {
 	}
 
 	/**
-	 * This is called every tick by the scheduler. It moves the agent along the
-	 * path.
+	 * This is called every tick by the scheduler. It moves the agent along the path.
 	 *
 	 * @param state the simulation state.
 	 */
@@ -208,10 +206,11 @@ public class Agent implements Steppable {
 			// Select a random destination node from the list of candidates
 			destinationNode = NodesLookup.randomNodeFromList(destinationCandidates);
 
-			// If it's dark, filter out destination nodes that lie in parks
-			if (state.isDark
-					&& destinationNode.getEdges().stream().anyMatch(CommunityCognitiveMap.edgesWithinParks::contains)) {
+			// If it's dark, filter out destination nodes that lie in parks or along rivers
+			if (state.isDark && destinationNode.getEdges().stream()
+					.anyMatch(CommunityCognitiveMap.getEdgesWithinParksOrAlongWater()::contains)) {
 				destinationNode = null; // Set destination to null and try again
+
 				// Adjust the distance range for the next iteration
 				lowerLimit *= 0.90;
 				upperLimit *= 1.10;
@@ -441,5 +440,14 @@ public class Agent implements Steppable {
 	 */
 	public PedSimCity getState() {
 		return state;
+	}
+
+	/**
+	 * Checks if the agent is vulnerable.
+	 *
+	 * @return true if the agent is vulnerable, false otherwise.
+	 */
+	public boolean isVulnerable() {
+		return vulnerable.equals(Vulnerable.VULNERABLE);
 	}
 }
