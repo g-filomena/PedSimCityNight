@@ -78,9 +78,6 @@ public class Agent implements Steppable {
 		this.agentNetwork = CommunityCognitiveMap.getNetwork();
 	}
 
-	public Agent() {
-	}
-
 	/**
 	 * Initialises the agent properties.
 	 */
@@ -114,6 +111,9 @@ public class Agent implements Steppable {
 			agentMovement.keepWalking();
 	}
 
+	/**
+	 * Plans a new trip for the agent based on its current status.
+	 */
 	private synchronized void planNewTrip() {
 
 		defineOriginDestination();
@@ -126,6 +126,9 @@ public class Agent implements Steppable {
 		agentMovement.initialisePath(route);
 	}
 
+	/**
+	 * Define next activity.
+	 */
 	public void nextActivity() {
 
 		if (!cognitiveMap.formed)
@@ -134,6 +137,9 @@ public class Agent implements Steppable {
 
 	}
 
+	/**
+	 * Starts walking alone and sets the agent's status to WALKING_ALONE.
+	 */
 	private void startWalkingAlone() {
 		destinationNode = null;
 		status = AgentStatus.WALKING_ALONE;
@@ -141,11 +147,17 @@ public class Agent implements Steppable {
 
 	}
 
+	/**
+	 * Defines the origin and destination of the agent.
+	 */
 	protected synchronized void defineOriginDestination() {
 		defineOrigin();
 		defineDestination();
 	}
 
+	/**
+	 * Defines the destination node based on the agent's status.
+	 */
 	private void defineOrigin() {// Define origin based on agent status
 
 		if (isWalkingAlone())
@@ -157,6 +169,9 @@ public class Agent implements Steppable {
 		}
 	}
 
+	/**
+	 * Defines the destination node based on the agent's status.
+	 */
 	private void defineDestination() {
 		// Define destination based on agent status
 		if (isWalkingAlone())
@@ -165,6 +180,9 @@ public class Agent implements Steppable {
 			destinationNode = cognitiveMap.getHomeNode();
 	}
 
+	/**
+	 * Randomly selects a destination node within a specified distance range.
+	 */
 	private void randomDestination() {
 
 		// Initialise limits for distance calculation
@@ -201,6 +219,11 @@ public class Agent implements Steppable {
 		}
 	}
 
+	/**
+	 * Handles actions when the agent reaches its destination.
+	 *
+	 * @param stateSchedule the simulation state.
+	 */
 	private void handleReachedDestination(PedSimCity stateSchedule) {
 
 		reachedDestination.set(false);
@@ -225,7 +248,7 @@ public class Agent implements Steppable {
 	/**
 	 * Moves the agent to the given coordinates.
 	 *
-	 * @param c the coordinates.
+	 * @param coordinate the coordinates.
 	 */
 	public void updateAgentPosition(Coordinate coordinate) {
 		GeometryFactory geometryFactory = new GeometryFactory();
@@ -234,15 +257,26 @@ public class Agent implements Steppable {
 		currentLocation.geometry = newLocation;
 	}
 
+	/**
+	 * Handles the agent's status when it reaches its solo destination.
+	 */
 	private void handleReachedSoloDestination() {
 		status = AgentStatus.AT_DESTINATION;
 		calculateTimeAtDestination(state.schedule.getSteps());
 	}
 
+	/**
+	 * Handles the agent's status when it reaches home.
+	 */
 	private void handleReachedHome() {
 		status = AgentStatus.WAITING;
 	}
 
+	/**
+	 * Calculates the time the agent will stay at its destination.
+	 *
+	 * @param steps the current simulation step.
+	 */
 	protected void calculateTimeAtDestination(long steps) {
 		// Generate a random number between 15 (inclusive) and 120 (inclusive)
 		int randomMinutes = 15 + random.nextInt(106);
@@ -250,6 +284,9 @@ public class Agent implements Steppable {
 		timeAtDestination = (randomMinutes * TimePars.MINUTE_TO_STEPS) + steps;
 	}
 
+	/**
+	 * The agent goes home after reaching its destination.
+	 */
 	protected void goHome() {
 
 		state.agentsWalking.add(this);
@@ -257,6 +294,12 @@ public class Agent implements Steppable {
 		planNewTrip();
 	}
 
+	/**
+	 * Updates the agent's status in the agent lists.
+	 *
+	 * @param isWalking   indicates whether the agent is walking or not.
+	 * @param reachedHome indicates whether the agent has reached home.
+	 */
 	public void updateAgentLists(boolean isWalking, boolean reachedHome) {
 
 		if (isWalking) {
@@ -271,8 +314,8 @@ public class Agent implements Steppable {
 
 	/**
 	 * Plans the route for the agent.
-	 * 
-	 * @throws Exception
+	 *
+	 * @throws Exception if the route cannot be planned.
 	 */
 	protected void planRoute() {
 
@@ -310,44 +353,93 @@ public class Agent implements Steppable {
 		return currentLocation;
 	}
 
+	/**
+	 * Gets the agent's properties.
+	 *
+	 * @return The agent's properties.
+	 */
 	public AgentProperties getProperties() {
 		return agentProperties;
 	}
 
+	/**
+	 * Gets the agent's cognitive map.
+	 *
+	 * @return The cognitive map.
+	 */
 	public CognitiveMap getCognitiveMap() {
 		return cognitiveMap;
 	}
 
+	/**
+	 * Checks if the agent is waiting.
+	 *
+	 * @return true if the agent is waiting, false otherwise.
+	 */
 	private boolean isWaiting() {
 		return status.equals(AgentStatus.WAITING);
 	}
 
+	/**
+	 * Checks if the agent is walking alone.
+	 *
+	 * @return true if the agent is walking alone, false otherwise.
+	 */
 	public boolean isWalkingAlone() {
 		return status.equals(AgentStatus.WALKING_ALONE);
 	}
 
+	/**
+	 * Checks if the agent is going home.
+	 *
+	 * @return true if the agent is going home, false otherwise.
+	 */
 	public boolean isGoingHome() {
 		return status.equals(AgentStatus.GOING_HOME);
 	}
 
+	/**
+	 * Checks if the agent is at its destination.
+	 *
+	 * @return true if the agent is at its destination, false otherwise.
+	 */
 	private boolean isAtDestination() {
 		return status.equals(AgentStatus.AT_DESTINATION) || status.equals(AgentStatus.AT_GROUP_DESTINATION);
 	}
 
+	/**
+	 * Gets the total distance the agent has walked.
+	 *
+	 * @return The total distance the agent has walked in kilometers.
+	 */
 	public double getTotalKmWalked() {
 		return kmWalkedTot;
 	}
 
+	/**
+	 * Gets the distance the agent has walked in the current day.
+	 *
+	 * @return The distance walked by the agent today in kilometers.
+	 */
 	public double getKmWalkedDay() {
 		return kmWalkedDay;
 	}
 
+	/**
+	 * Sets the distance to the next destination for the agent.
+	 *
+	 * @param distanceNextDestination The distance to the next destination.
+	 */
 	public void setDistanceNextDestination(double distanceNextDestination) {
 		this.distanceNextDestination = distanceNextDestination;
 	}
 
+	/**
+	 * Gets the simulation state of the agent.
+	 *
+	 * @return The PedSimCity simulation state.
+	 */
 	public PedSimCity getState() {
 		return state;
 	}
-
 }
