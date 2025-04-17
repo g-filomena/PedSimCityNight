@@ -1,6 +1,5 @@
 package pedSim.engine;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -8,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.javatuples.Pair;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.linearref.LengthIndexedLine;
 import org.locationtech.jts.planargraph.DirectedEdge;
@@ -24,7 +24,6 @@ import sim.graph.Building;
 import sim.graph.EdgeGraph;
 import sim.graph.Graph;
 import sim.graph.NodeGraph;
-import sim.util.geo.MasonGeometry;
 
 /**
  * The PedSimCity class represents the main simulation environment.
@@ -37,7 +36,6 @@ public class PedSimCity extends SimState {
 	public static VectorLayer buildings = new VectorLayer();
 	public static VectorLayer barriers = new VectorLayer();
 	public static VectorLayer junctions = new VectorLayer();
-//	public static VectorLayer sightLines = new VectorLayer();
 
 	final public static Graph network = new Graph();
 	final public static Graph dualNetwork = new Graph();
@@ -57,14 +55,7 @@ public class PedSimCity extends SimState {
 	public static Map<Integer, NodeGraph> centroidsMap = new HashMap<>();
 
 	public boolean isDark = false;
-
-	// OD related variables
-	public static List<Float> distances = new ArrayList<>();
-	public static List<MasonGeometry> startingNodes = new ArrayList<>();
-
 	public static final Map<DirectedEdge, LengthIndexedLine> indexedEdgeCache = new HashMap<>();
-
-	// used only when loading OD sets
 
 	public int currentJob;
 	public FlowHandler flowHandler;
@@ -74,6 +65,15 @@ public class PedSimCity extends SimState {
 	public Set<Agent> agentsWalking = ConcurrentHashMap.newKeySet();
 	public Set<Agent> agentsList = ConcurrentHashMap.newKeySet();
 	public static Set<EdgeGraph> edges = new HashSet<>();
+
+	// cached route
+	public static Map<Pair<NodeGraph, NodeGraph>, List<DirectedEdge>> routesDay = new ConcurrentHashMap<>();
+	public static Map<Pair<NodeGraph, NodeGraph>, List<DirectedEdge>> routesNonVulnerableNight = new ConcurrentHashMap<>();
+	public static Map<Pair<NodeGraph, NodeGraph>, List<DirectedEdge>> routesVulnerableNight = new ConcurrentHashMap<>();
+
+	// cached alternative routes for night movement
+	public static Map<Pair<NodeGraph, NodeGraph>, List<DirectedEdge>> altRoutesVulnerable = new ConcurrentHashMap<>();
+	public static Map<Pair<NodeGraph, NodeGraph>, List<DirectedEdge>> altRoutesNonVulnerable = new ConcurrentHashMap<>();
 
 	/**
 	 * Constructs a new instance of the PedSimCity simulation environment.
@@ -89,9 +89,8 @@ public class PedSimCity extends SimState {
 	}
 
 	/**
-	 * Initialises the simulation by defining the simulation mode, initialising edge
-	 * volumes, and preparing the simulation environment. It then proceeds to
-	 * populate the environment with agents and starts the agent movement.
+	 * Initialises the simulation by defining the simulation mode, initialising edge volumes, and preparing the simulation environment. It then proceeds
+	 * to populate the environment with agents and starts the agent movement.
 	 */
 	@Override
 	public void start() {
@@ -102,9 +101,8 @@ public class PedSimCity extends SimState {
 	}
 
 	/**
-	 * Prepares the environment for the simulation. This method sets up the minimum
-	 * bounding rectangle (MBR) to encompass both the road and building layers and
-	 * updates the MBR of the road layer accordingly.
+	 * Prepares the environment for the simulation. This method sets up the minimum bounding rectangle (MBR) to encompass both the road and building
+	 * layers and updates the MBR of the road layer accordingly.
 	 */
 	private void prepareEnvironment() {
 		MBR = roads.getMBR();
@@ -116,9 +114,8 @@ public class PedSimCity extends SimState {
 	}
 
 	/**
-	 * Populates the simulation environment with agents and other entities based on
-	 * the selected simulation parameters. This method uses the Populate class to
-	 * generate the agent population.
+	 * Populates the simulation environment with agents and other entities based on the selected simulation parameters. This method uses the Populate
+	 * class to generate the agent population.
 	 */
 	private void populateEnvironment() {
 
@@ -128,8 +125,7 @@ public class PedSimCity extends SimState {
 	}
 
 	/**
-	 * Starts moving agents in the simulation. This method schedules agents for
-	 * repeated movement updates and sets up the spatial index for agents.
+	 * Starts moving agents in the simulation. This method schedules agents for repeated movement updates and sets up the spatial index for agents.
 	 */
 	private void startMovingAgents() {
 		for (Agent agent : agentsList) {
@@ -145,19 +141,12 @@ public class PedSimCity extends SimState {
 	 */
 	@Override
 	public void finish() {
-//
-//		try {
-//			Exporter exporter = new Exporter(flowHandler);
-//			exporter.saveResults();
-//		} catch (final Exception e) {
-//			e.printStackTrace();
-//		}
+
 		super.finish();
 	}
 
 	/**
-	 * The main function that allows the simulation to be run in stand-alone,
-	 * non-GUI mode.
+	 * The main function that allows the simulation to be run in stand-alone, non-GUI mode.
 	 *
 	 * @param args Command-line arguments.
 	 * @throws Exception If an error occurs during simulation execution.
