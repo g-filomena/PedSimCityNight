@@ -76,13 +76,13 @@ public class CognitiveMap extends CommunityCognitiveMap {
 	}
 
 	/**
-	 * Checks whether a specific region is known to the agent or the community.
+	 * Checks whether a specific region is known to the agent.
 	 * 
 	 * @param regionID The ID of the region to check.
 	 * @return True if the region is known; otherwise, false.
 	 */
 	public boolean isRegionKnown(Integer regionID) {
-		return knownRegions.contains(regionID) || CommunityCognitiveMap.isRegionKnownByCommunity(regionID);
+		return knownRegions.contains(regionID);
 	}
 
 	/**
