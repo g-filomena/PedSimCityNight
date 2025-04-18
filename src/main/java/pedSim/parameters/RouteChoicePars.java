@@ -1,8 +1,8 @@
 package pedSim.parameters;
 
 /**
- * The Parameters class contains global parameters and settings for the PedSimCity simulation. These parameters are used to configure various aspects
- * of the simulation, including simulation mode, agent behavior, and data import options.
+ * The Parameters class contains global parameters and settings for the PedSimCity simulation. These parameters are used
+ * to configure various aspects of the simulation, including simulation mode, agent behavior, and data import options.
  */
 public class RouteChoicePars {
 
@@ -20,7 +20,7 @@ public class RouteChoicePars {
 	public static Integer[] destinationsTmp = {};
 	public static Integer[] cityCentreRegionsID = { 0, 2, 13, 33 };
 
-	public static double naturalBarriers = 0.20;
+	public static double naturalBarriers = 0.15;
 	public static double naturalBarriersSD = 0.10;
 
 	// Landmark Integration
@@ -31,5 +31,4 @@ public class RouteChoicePars {
 		minTripDistance = avgTripDistance * 0.50;
 		maxTripDistance = avgTripDistance * 1.50;
 	}
-
 }
