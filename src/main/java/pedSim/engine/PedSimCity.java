@@ -89,8 +89,8 @@ public class PedSimCity extends SimState {
 	}
 
 	/**
-	 * Initialises the simulation by defining the simulation mode, initialising edge volumes, and preparing the simulation environment. It then proceeds
-	 * to populate the environment with agents and starts the agent movement.
+	 * Initialises the simulation by defining the simulation mode, initialising edge volumes, and preparing the
+	 * simulation environment. It then proceeds to populate the environment with agents and starts the agent movement.
 	 */
 	@Override
 	public void start() {
@@ -101,8 +101,8 @@ public class PedSimCity extends SimState {
 	}
 
 	/**
-	 * Prepares the environment for the simulation. This method sets up the minimum bounding rectangle (MBR) to encompass both the road and building
-	 * layers and updates the MBR of the road layer accordingly.
+	 * Prepares the environment for the simulation. This method sets up the minimum bounding rectangle (MBR) to
+	 * encompass both the road and building layers and updates the MBR of the road layer accordingly.
 	 */
 	private void prepareEnvironment() {
 		MBR = roads.getMBR();
@@ -114,8 +114,8 @@ public class PedSimCity extends SimState {
 	}
 
 	/**
-	 * Populates the simulation environment with agents and other entities based on the selected simulation parameters. This method uses the Populate
-	 * class to generate the agent population.
+	 * Populates the simulation environment with agents and other entities based on the selected simulation parameters.
+	 * This method uses the Populate class to generate the agent population.
 	 */
 	private void populateEnvironment() {
 
@@ -125,7 +125,8 @@ public class PedSimCity extends SimState {
 	}
 
 	/**
-	 * Starts moving agents in the simulation. This method schedules agents for repeated movement updates and sets up the spatial index for agents.
+	 * Starts moving agents in the simulation. This method schedules agents for repeated movement updates and sets up
+	 * the spatial index for agents.
 	 */
 	private void startMovingAgents() {
 		for (Agent agent : agentsList) {
