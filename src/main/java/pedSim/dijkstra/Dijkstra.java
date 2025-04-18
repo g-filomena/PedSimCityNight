@@ -126,28 +126,4 @@ public class Dijkstra {
 		NodeWrapper nodeWrapper = nodeWrappersMap.get(targetNode);
 		return nodeWrapper != null ? nodeWrapper.gx : Double.MAX_VALUE;
 	}
-
-	/**
-	 * Determines whether a pedestrian agent should avoid a specific edge during the night, based on the edge's characteristics and the agent's cognitive
-	 * map.
-	 * 
-	 * This method checks if the edge is part of a region that is either unknown to the agent (not in its or the community's cognitive map) or located
-	 * within a park or near water,in which case it returns true indicating the agent should avoid it at night. If the edge leads to the agent's
-	 * destination or if the region is known, the agent may proceed, and the method returns false.
-	 *
-	 * @param edge the edge to evaluate
-	 * @return true if the agent should avoid the edge at night; false otherwise
-	 */
-	protected boolean shouldAvoidEdgeAtNight(EdgeGraph edge) {
-
-		if (edge.getNodes().contains(destinationNode))
-			return false;
-
-		Integer regionID = edge.getRegionID();
-		boolean isRegionKnown = agent.getCognitiveMap().isRegionKnown(regionID);
-		if (CommunityCognitiveMap.getEdgesWithinParksOrAlongWater().contains(edge) || !isRegionKnown)
-			return true;
-		return false;
-	}
-
 }
