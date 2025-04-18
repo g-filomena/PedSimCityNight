@@ -21,8 +21,8 @@ import sim.graph.NodeGraph;
 import sim.util.geo.MasonGeometry;
 
 /**
- * This class represent a community share cognitive map (or Image of the City) used for storing meaningful information about the environment and, in
- * turn, navigating.
+ * This class represent a community share cognitive map (or Image of the City) used for storing meaningful information
+ * about the environment and, in turn, navigating.
  */
 public class CommunityCognitiveMap {
 
@@ -30,6 +30,7 @@ public class CommunityCognitiveMap {
 	 * Maps pairs of nodes to gateways.
 	 */
 	public Map<Pair<NodeGraph, NodeGraph>, Gateway> gatewaysMap = new HashMap<>();
+	private static List<NodeGraph> potentialDestinationNodes;
 
 	/**
 	 * Stores barriers as a VectorLayer.
@@ -91,7 +92,8 @@ public class CommunityCognitiveMap {
 	private static void setCommunityNetwork(Graph network, Graph dualNetwork) {
 
 		communityNetwork = network;
-		// Iterates over each edge in the community network and maps its road type to a corresponding entry from Pars.roadTypes.
+		// Iterates over each edge in the community network and maps its road type to a corresponding entry from
+		// Pars.roadTypes.
 		getCommunityNetwork().getEdges().forEach(edge -> Pars.roadTypes.entrySet().stream()
 				.filter(entry -> Arrays.asList(entry.getValue()).contains(edge.attributes.get("roadType").getString()))
 				.findFirst().ifPresent(entry -> roadTypeMap.put(edge, entry.getKey())));
@@ -99,7 +101,8 @@ public class CommunityCognitiveMap {
 	}
 
 	/**
-	 * Builds the road classification by categorising edges into primary, secondary, tertiary, neighbourhood, or unknown road types.
+	 * Builds the road classification by categorising edges into primary, secondary, tertiary, neighbourhood, or unknown
+	 * road types.
 	 */
 	private static void buildRoadClassification() {
 
