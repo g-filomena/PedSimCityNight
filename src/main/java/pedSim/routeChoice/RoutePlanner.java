@@ -5,10 +5,9 @@ import sim.graph.NodeGraph;
 import sim.routing.Route;
 
 /**
- * The `RoutePlanner` class is responsible for calculating a route for an agent
- * within a pedestrian simulation. It considers the agent's route choice
- * properties and strategies to determine the optimal path from an origin node
- * to a destination node.
+ * The `RoutePlanner` class is responsible for calculating a route for an agent within a pedestrian simulation. It
+ * considers the agent's route choice properties and strategies to determine the optimal path from an origin node to a
+ * destination node.
  */
 public class RoutePlanner {
 
@@ -31,11 +30,9 @@ public class RoutePlanner {
 	}
 
 	/**
-	 * Defines the path for the agent based on route choice properties and
-	 * strategies.
+	 * Defines the path for the agent based on route choice properties and strategies.
 	 *
 	 * @return A `Route` object representing the calculated route.
-	 * @throws Exception
 	 */
 	public Route definePath() {
 
