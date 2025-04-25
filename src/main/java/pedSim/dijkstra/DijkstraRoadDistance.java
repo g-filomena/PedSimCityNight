@@ -15,8 +15,8 @@ import sim.graph.NodeGraph;
 import sim.routing.NodeWrapper;
 
 /**
- * The class allows computing the road distance shortest route by employing the Dijkstra shortest-path algorithm on a primal graph representation of
- * the street network.
+ * The class allows computing the road distance shortest route by employing the Dijkstra shortest-path algorithm on a
+ * primal graph representation of the street network.
  *
  * It furthermore supports combined navigation strategies based on landmark and urban subdivisions (regions, barriers).
  **/
@@ -25,14 +25,12 @@ public class DijkstraRoadDistance extends Dijkstra {
 	/**
 	 * Performs the Dijkstra's algorithm to find the shortest path from the origin node to the destination node.
 	 *
-	 * This method calculates the shortest path in the network graph from the specified origin node to the destination node while considering optional
-	 * segments to avoid and agent properties.
+	 * This method calculates the shortest path in the network graph from the specified origin node to the destination
+	 * node while considering optional segments to avoid and agent properties.
 	 *
-	 * @param originNode           The starting node for the path.
-	 * @param destinationNode      The destination node to reach.
-	 * @param finalDestinationNode The final destination node (primal graph) for the path.
-	 * @param segmentsToAvoid      A set of directed edges (segments) to avoid during the path calculation.
-	 * @param agent                The agent for which the route is computed.
+	 * @param originNode      The starting node for the path.
+	 * @param destinationNode The destination node to reach.
+	 * @param agent           The agent for which the route is computed.
 	 * 
 	 * @return An ArrayList of DirectedEdges representing the shortest path from the origin to the destination.
 	 */
