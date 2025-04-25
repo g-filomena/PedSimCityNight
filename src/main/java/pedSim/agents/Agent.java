@@ -26,7 +26,8 @@ import sim.routing.Route;
 import sim.util.geo.MasonGeometry;
 
 /**
- * This class represents an agent in the pedestrian simulation. Agents move along paths between origin and destination nodes.
+ * This class represents an agent in the pedestrian simulation. Agents move along paths between origin and destination
+ * nodes.
  */
 public class Agent implements Steppable {
 
@@ -314,7 +315,6 @@ public class Agent implements Steppable {
 	/**
 	 * Plans the route for the agent.
 	 *
-	 * @throws Exception if the route cannot be planned.
 	 */
 	protected void planRoute() {
 
@@ -334,7 +334,6 @@ public class Agent implements Steppable {
 	/**
 	 * Removes the agent from the simulation.
 	 *
-	 * @param stateSchedule the simulation state.
 	 */
 	protected void removeAgent() {
 		state.agentsList.remove(this);
