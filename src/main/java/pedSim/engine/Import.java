@@ -9,9 +9,8 @@ import pedSim.utilities.LoggerUtil;
 import sim.field.geo.VectorLayer;
 
 /**
- * This class is responsible for importing various data files required for the
- * simulation based on the selected simulation parameters. It includes methods
- * for importing distances, barriers, buildings and sight lines, road network
+ * This class is responsible for importing various data files required for the simulation based on the selected
+ * simulation parameters. It includes methods for importing distances, barriers, buildings and sight lines, road network
  * graphs, and empirical agent groups data.
  */
 public class Import {
@@ -24,8 +23,7 @@ public class Import {
 	ClassLoader CLASSLOADER = getClass().getClassLoader();
 
 	/**
-	 * Imports various data files required for the simulation based on the selected
-	 * simulation parameters.
+	 * Imports various data files required for the simulation based on the selected simulation parameters.
 	 *
 	 * @throws Exception If an error occurs during the import process.
 	 */
@@ -79,7 +77,6 @@ public class Import {
 
 			for (int i = 0; i < layerSuffixes.length; i++) {
 				String filePath = resourcePath + "/" + Pars.cityName + layerSuffixes[i];
-				System.out.println(filePath);
 				URL fileUrl = Pars.javaProject ? new File(filePath + ".gpkg").toURI().toURL()
 						: CLASSLOADER.getResource(filePath + ".gpkg");
 				VectorLayer.readGPKG(fileUrl, vectorLayers[i]);
@@ -100,11 +97,9 @@ public class Import {
 	private void readBarriers() throws Exception {
 		try {
 			String filePath = resourcePath + "/" + Pars.cityName + "_barriers";
-
 			URL fileUrl = Pars.javaProject ? new File(filePath + ".gpkg").toURI().toURL()
 					: CLASSLOADER.getResource(filePath + ".gpkg");
 			VectorLayer.readGPKG(fileUrl, PedSimCity.barriers);
-
 			logger.info("Barriers successfully imported.");
 		} catch (Exception e) {
 			handleImportError("Importing Barriers Failed", e);
@@ -112,8 +107,7 @@ public class Import {
 	}
 
 	/**
-	 * Handles errors that occur during the import of a layer. It logs the layer
-	 * name and the exception that occurred.
+	 * Handles errors that occur during the import of a layer. It logs the layer name and the exception that occurred.
 	 *
 	 * @param layerName The name of the layer that caused the error.
 	 * @param e         The exception that was thrown during the import process.
