@@ -34,11 +34,8 @@ public class DijkstraRoadDistanceNight extends Dijkstra {
 	 * This method calculates the shortest path in the network graph from the specified origin node to the destination
 	 * node while considering optional segments to avoid and agent properties.
 	 *
-	 * @param originNode           The starting node for the path.
-	 * @param destinationNode      The destination node to reach.
-	 * @param finalDestinationNode The final destination node (primal graph) for the path.
-	 * @param segmentsToAvoid      A set of directed edges (segments) to avoid during the path calculation.
-	 * @param agent                The agent for which the route is computed.
+	 * @param originNode The starting node for the path.
+	 * @param agent      The agent for which the route is computed.
 	 * 
 	 * @return An ArrayList of DirectedEdges representing the shortest path from the origin to the destination.
 	 */
