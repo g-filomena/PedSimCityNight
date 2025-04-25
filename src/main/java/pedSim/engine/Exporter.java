@@ -24,8 +24,7 @@ import sim.util.geo.CSVUtils;
 import sim.util.geo.MasonGeometry;
 
 /**
- * The Export class is responsible for saving the simulation results to
- * specified output directories.
+ * The Export class is responsible for saving the simulation results to specified output directories.
  */
 public class Exporter {
 
@@ -55,7 +54,7 @@ public class Exporter {
 	/**
 	 * Saves pedestrian volumes data to a CSV file.
 	 *
-	 * @param job The job identifier.
+	 * @param day The simulated day from 1 onwards.
 	 * @throws Exception If there is an error while saving the data.
 	 */
 	public void savePedestrianVolumes(int day) throws Exception {
@@ -100,7 +99,7 @@ public class Exporter {
 	/**
 	 * Saves pedestrian volumes data to a CSV file.
 	 *
-	 * @param job The job identifier.
+	 * @param day The simulated day from 1 onwards.
 	 * @throws Exception If there is an error while saving the data.
 	 */
 	public void saveRoutes(int day) throws Exception {
