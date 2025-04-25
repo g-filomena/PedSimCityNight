@@ -5,18 +5,15 @@ import java.util.HashMap;
 import pedSim.utilities.StringEnum.RoadType;
 
 /**
- * The Parameters class contains global parameters and settings for the
- * PedSimCity simulation. These parameters are used to configure various aspects
- * of the simulation, including simulation mode, agent behavior, and data import
- * options.
+ * The Parameters class contains global parameters and settings for the PedSimCity simulation. These parameters are used
+ * to configure various aspects of the simulation, including simulation mode, agent behavior, and data import options.
  */
 public class Pars {
 
 	// General parameters
 	public static String cityName = "Torino";
 	public static int population = 800000;
-	public static double percentagePopulationAgent = 0.20;
-	public static double percentagePopulationWalking = 0.40;
+	public static double percentagePopulationAgent = 0.02;
 	public static double metersPerDayPerPerson = 4000; // 4k
 	public static double metersPerDay;
 	public static int numAgents;
@@ -35,8 +32,7 @@ public class Pars {
 	public static double moveRate;
 
 	// for development/testing purposes only
-	public static boolean javaProject = true;
-	public static boolean verboseMode = false;
+	public static boolean javaProject = false;
 	public static String localPath = "C:/Users/gfilo/OneDrive - The University of Liverpool/Scripts/pedsimcityNight/src/main/resources/";
 
 	static String[] primary = { "primary", "primary_link" };
