@@ -1,7 +1,6 @@
 package pedSim.applet;
 
 import java.awt.Button;
-import java.awt.Checkbox;
 import java.awt.Choice;
 import java.awt.Color;
 import java.awt.Frame;
@@ -24,21 +23,17 @@ import pedSim.parameters.TimePars;
 import pedSim.utilities.LoggerUtil;
 
 /**
- * A graphical user interface (GUI) applet for configuring and running the
- * PedSimCity simulation. This applet allows users to select simulation
- * parameters, start the simulation, and view simulation progress. It provides
- * options for choosing the simulation mode, city name, and other
- * simulation-specific settings. Users can also enable specific
+ * A graphical user interface (GUI) applet for configuring and running the PedSimCity simulation. This applet allows
+ * users to select simulation parameters, start the simulation, and view simulation progress. It provides options for
+ * choosing the simulation mode, city name, and other simulation-specific settings. Users can also enable specific
  * origin-destination (OD) testing and access other advanced options.
  */
 public class PedSimCityApplet extends Frame implements ItemListener {
 
 	private static final long serialVersionUID = 1L;
 	private Choice cityName;
-	private Choice modeChoice;
 	private Button startButton;
 	private Button endButton;
-	private Checkbox verboseCheckBox;
 	private Label jobLabel;
 	private Label remainingTripsLabel;
 	private Label jobsLabel;
@@ -51,46 +46,44 @@ public class PedSimCityApplet extends Frame implements ItemListener {
 	private TextField percentageTextField;
 
 	/**
-	 * Constructs a new instance of the `PedSimCityApplet` class, creating a
-	 * graphical user interface (GUI) applet for configuring and running the
-	 * PedSimCity simulation. Initialises and arranges various GUI components,
-	 * including mode selection, city selection, and simulation control buttons.
+	 * Constructs a new instance of the `PedSimCityApplet` class, creating a graphical user interface (GUI) applet for
+	 * configuring and running the PedSimCity simulation. Initialises and arranges various GUI components, including
+	 * mode selection, city selection, and simulation control buttons.
 	 */
 	public PedSimCityApplet() {
 		super("PedSimCity Applet");
 		setLayout(null);
 
-		Label cityNameLabel = new Label("City Name:");
-		cityNameLabel.setBounds(10, 70, 80, 20);
+		Label cityNameLabel = new Label("Study area:");
+		cityNameLabel.setBounds(10, 70, 120, 20);
 		add(cityNameLabel);
-
 		cityName = new Choice();
 		cityName.setBounds(140, 70, 150, 20);
 		updateCityNameOptions(); // Set initial options based on the default selection of modeChoice
 		add(cityName);
 
-		Label daysLabel = new Label("Duration in days" + ":");
+		Label daysLabel = new Label("Duration in days:");
 		daysTextField = new TextField(Integer.toString(Pars.durationDays));
-		daysLabel.setBounds(10, 100, 100, 20);
+		daysLabel.setBounds(10, 100, 120, 20);
 		daysTextField.setBounds(190, 100, 100, 20);
 		add(daysLabel);
 		add(daysTextField);
 
-		Label populationLabel = new Label("Actual Population" + ":");
+		Label populationLabel = new Label("Study area Population:");
 		populationTextField = new TextField(Integer.toString(Pars.population));
-		populationLabel.setBounds(10, 130, 100, 20);
+		populationLabel.setBounds(10, 130, 150, 20);
 		populationTextField.setBounds(190, 130, 100, 20);
 		add(populationLabel);
 		add(populationTextField);
 
-		Label percentageLabel = new Label("Population % Represented by Agents" + ":");
-		percentageTextField = new TextField(Double.toString(Pars.percentagePopulationAgent));
+		Label percentageLabel = new Label("% Population simulated:");
+		percentageTextField = new TextField(Double.toString(Pars.percentagePopulationAgent * 100));
 		percentageLabel.setBounds(10, 160, 150, 20);
 		percentageTextField.setBounds(190, 160, 100, 20);
 		add(percentageLabel);
 		add(percentageTextField);
 
-		Label nrJobsLabel = new Label("jobs" + ":");
+		Label nrJobsLabel = new Label("Nr jobs:");
 		jobsTextField = new TextField(Integer.toString(1));
 		nrJobsLabel.setBounds(10, 190, 100, 20);
 		jobsTextField.setBounds(190, 190, 100, 20);
@@ -106,15 +99,9 @@ public class PedSimCityApplet extends Frame implements ItemListener {
 		});
 		add(otherOptionsButton);
 
-		verboseCheckBox = new Checkbox("Verbose y/n");
-		verboseCheckBox.setEnabled(true);
-		verboseCheckBox.setBounds(10, 280, 300, 40);
-		verboseCheckBox.addItemListener(this);
-		add(verboseCheckBox);
-
 		Color color = new Color(0, 220, 0);
 		startButton = new Button("Run Simulation");
-		startButton.setBounds(10, 330, 120, 50);
+		startButton.setBounds(10, 270, 120, 50);
 		startButton.setBackground(color);
 		add(startButton);
 
@@ -123,14 +110,13 @@ public class PedSimCityApplet extends Frame implements ItemListener {
 
 		startButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				endButton.setBounds(10, 330, 120, 50);
+				endButton.setBounds(10, 270, 120, 50);
 				add(endButton);
 				startButton.setVisible(false);
 				simulationThread = new Thread(() -> {
 					try {
 						startSimulation();
 					} catch (Exception e1) {
-						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
 				});
@@ -161,14 +147,13 @@ public class PedSimCityApplet extends Frame implements ItemListener {
 		jobsLabel.setVisible(false);
 		add(jobsLabel);
 
-		setSize(450, 450);
+		setSize(350, 350);
 		setVisible(true);
 
 	}
 
 	/**
-	 * Opens the `OtherOptionsPanel`, allowing the user to configure additional
-	 * simulation options.
+	 * Opens the `OtherOptionsPanel`, allowing the user to configure additional simulation options.
 	 */
 	private void openParametersPanel() {
 		ParametersPanel parametersFrame = new ParametersPanel();
@@ -176,9 +161,8 @@ public class PedSimCityApplet extends Frame implements ItemListener {
 	}
 
 	/**
-	 * Initiates the simulation with the selected parameters and starts the
-	 * simulation process. This method sets the city name, simulation mode, and
-	 * other parameters before running the simulation.
+	 * Initiates the simulation with the selected parameters and starts the simulation process. This method sets the
+	 * city name, simulation mode, and other parameters before running the simulation.
 	 * 
 	 * @throws Exception
 	 */
@@ -188,15 +172,14 @@ public class PedSimCityApplet extends Frame implements ItemListener {
 		Pars.jobs = Integer.parseInt(jobsTextField.getText());
 		TimePars.numberOfDays = Integer.parseInt(daysTextField.getText());
 		Pars.population = Integer.parseInt(populationTextField.getText());
-		Pars.percentagePopulationAgent = Double.parseDouble(percentageTextField.getText());
+		Pars.percentagePopulationAgent = Double.parseDouble(percentageTextField.getText()) / 100.0;
 		Pars.setSimulationParameters();
 		runSimulation();
 	}
 
 	/**
-	 * Initiates the simulation with the selected parameters and starts the
-	 * simulation process. This method sets the city name, simulation mode, and
-	 * other parameters before running the simulation.
+	 * Initiates the simulation with the selected parameters and starts the simulation process. This method sets the
+	 * city name, simulation mode, and other parameters before running the simulation.
 	 * 
 	 * @throws Exception
 	 */
@@ -204,17 +187,9 @@ public class PedSimCityApplet extends Frame implements ItemListener {
 		importFiles();
 
 		Environment.prepare();
-//		logger.info("Environment Prepared. About to Start Simulation");
-//
-//		Engine engine = new Engine();
-//		for (int jobNr = 0; jobNr < Pars.jobs; jobNr++) {
-//			jobLabel.setText("Executing Job nr.: " + jobNr);
-//			engine.executeJob(jobNr);
-//		}
-//
-//		handleEndSimulation();
-//		
+		logger.info("Environment Prepared. About to Start Simulation");
 
+		// run in parallel
 		IntStream.range(0, Pars.jobs).parallel().forEach(jobNr -> {
 			try {
 				Engine engine = new Engine(); // new instance per thread
@@ -247,8 +222,7 @@ public class PedSimCityApplet extends Frame implements ItemListener {
 	/**
 	 * The main entry point for the PedSimCityApplet application.
 	 *
-	 * @param args an array of command-line arguments (not used in this
-	 *             application).
+	 * @param args an array of command-line arguments (not used in this application).
 	 */
 	public static void main(String[] args) {
 		PedSimCityApplet applet = new PedSimCityApplet();
@@ -263,25 +237,12 @@ public class PedSimCityApplet extends Frame implements ItemListener {
 	// This method updates the available options for cityName based on the selected
 	// modeChoice
 	private void updateCityNameOptions() {
-		cityName.removeAll(); // Clear existing options
-		// Add cityName options based on the selected mode
-		cityName.add("Torino");
+		cityName.removeAll();
 		cityName.add("TorinoCentre");
 		cityName.validate(); // Validate the layout to reflect changes in options
 	}
 
-	/**
-	 * Invoked when an item's state changes. This method handles changes in the
-	 * state of specificODcheckbox and modeChoice components.
-	 *
-	 * @param e an ItemEvent object that provides information about the event (e.g.,
-	 *          which item's state changed).
-	 */
 	@Override
 	public void itemStateChanged(ItemEvent e) {
-		if (e.getSource() == modeChoice)
-			;
-		else
-			Pars.verboseMode = true;
 	}
 }
