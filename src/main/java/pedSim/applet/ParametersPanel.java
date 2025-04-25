@@ -12,12 +12,13 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import pedSim.parameters.Pars;
+import pedSim.parameters.RouteChoicePars;
 
 /**
- * A graphical user interface panel for configuring various simulation
- * parameters.
+ * A graphical user interface panel for configuring various simulation parameters.
  */
 public class ParametersPanel extends Frame {
 	private static final long serialVersionUID = 1L;
@@ -30,11 +31,8 @@ public class ParametersPanel extends Frame {
 
 	TextField cityCentreField = new TextField();
 
-	String[] doubleStrings = { "% of Population to be simulated from 0.0 - 1.0",
-			"Average nr of meters walked a day, per person", "% of Population walking", };
-
-	Double defaultValues[] = { Pars.percentagePopulationAgent, Pars.metersPerDayPerPerson,
-			Pars.percentagePopulationWalking };
+	String[] doubleStrings = { "Average distance in meters walked a day, per person" };
+	Double defaultValues[] = { Pars.metersPerDayPerPerson };
 
 	/**
 	 * Constructs the Parameters Panel.
@@ -53,6 +51,9 @@ public class ParametersPanel extends Frame {
 		cityCentreLabel.setBounds(X, y, 350, 20);
 		add(cityCentreLabel);
 
+		String defaultCityCentreRegions = Arrays.stream(RouteChoicePars.cityCentreRegionsID).map(String::valueOf)
+				.collect(Collectors.joining(","));
+		cityCentreField = new TextField(defaultCityCentreRegions);
 		cityCentreField.setBounds(X + 500, y, 200, 20);
 		add(cityCentreField);
 
@@ -66,7 +67,7 @@ public class ParametersPanel extends Frame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				adjustParameters();
-//				inputCityCentreRegions();
+				inputCityCentreRegions();
 				closePanel();
 			}
 		});
@@ -103,20 +104,19 @@ public class ParametersPanel extends Frame {
 		add(localPathField);
 	}
 
-//	private void inputCityCentreRegions() {
-//		String[] cityCentreArray = cityCentreField.getText().split(",");
-//		Integer[] cityCentreRegions;
-//
-//		cityCentreRegions = new Integer[cityCentreArray.length];
-//		for (int i = 0; i < cityCentreArray.length; i++)
-//			cityCentreRegions[i] = Integer.parseInt(cityCentreArray[i].trim());
-//
-//		RouteChoicePars.cityCentreRegionsID = cityCentreRegions;
-//	}
+	private void inputCityCentreRegions() {
+		String[] cityCentreArray = cityCentreField.getText().split(",");
+		Integer[] cityCentreRegions;
+
+		cityCentreRegions = new Integer[cityCentreArray.length];
+		for (int i = 0; i < cityCentreArray.length; i++)
+			cityCentreRegions[i] = Integer.parseInt(cityCentreArray[i].trim());
+
+		RouteChoicePars.cityCentreRegionsID = cityCentreRegions;
+	}
 
 	/**
-	 * Adds double-interpreter field to the panel for adjusting simulation
-	 * parameters.
+	 * Adds double-interpreter field to the panel for adjusting simulation parameters.
 	 *
 	 * @param fieldName    The name of the parameter.
 	 * @param defaultValue The default value for the parameter.
@@ -133,16 +133,6 @@ public class ParametersPanel extends Frame {
 		doubleTextFields.add(textField);
 	}
 
-	/**
-	 * Adds a boolean-interpreter field to the panel for adjusting simulation
-	 * parameters.
-	 *
-	 * @param fieldName    The name of the parameter.
-	 * @param defaultValue The default value for the parameter.
-	 * @param x            The x-coordinate for the field.
-	 * @param y            The y-coordinate for the field.
-	 */
-
 	public static void main(String[] args) {
 		ParametersPanel frame = new ParametersPanel();
 		frame.addWindowListener(new WindowAdapter() {
@@ -154,9 +144,8 @@ public class ParametersPanel extends Frame {
 	}
 
 	/**
-	 * Adjusts the simulation parameters based on the values entered in text fields.
-	 * Parses the values and updates the corresponding parameters in the Parameters
-	 * class.
+	 * Adjusts the simulation parameters based on the values entered in text fields. Parses the values and updates the
+	 * corresponding parameters in the Parameters class.
 	 */
 	private void adjustParameters() {
 
@@ -173,21 +162,4 @@ public class ParametersPanel extends Frame {
 		setVisible(false);
 		dispose();
 	}
-
-//	/**
-//	 * Retrieves the value of a text field based on its y-coordinate.
-//	 *
-//	 * @param y The y-coordinate of the text field.
-//	 * @return The text entered in the text field or an empty string if not found.
-//	 */
-//	private String getTextFieldValue(int y) {
-//		TextField textField = null;
-//		for (int i = 0; i < getComponentCount(); i++) {
-//			if (getComponent(i) instanceof TextField && getComponent(i).getY() == y) {
-//				textField = (TextField) getComponent(i);
-//				break;
-//			}
-//		}
-//		return textField != null ? textField.getText() : "";
-//	}
 }
