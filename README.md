@@ -2,7 +2,7 @@
 # PedSimCityNight #
 
 ## An Agent-Based Model (ABM) for simulating the movement of pedestrian agents in cities during they day and at nighttime ##
-[![GitHub CI](https://github.com/g-filomena/PedSimCity/actions/workflows/build.yaml/badge.svg)](https://github.com/g-filomena/PedSimCity/actions/workflows/build.yaml)
+[![GitHub CI](https://github.com/g-filomena/PedSimCityNight/actions/workflows/build.yaml/badge.svg)](https://github.com/g-filomena/PedSimCityNight/actions/workflows/build.yaml)
 [![License](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.en.html)
 
 This model simulates the movement of pedestrians across the street network of large urban areas, comparing their movement flows during the day, and at night. It is here tested for the city of Torino, in the north of Italy. A city of 800'000 inhabitants. 
