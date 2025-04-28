@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: Standard Checkout
         uses: actions/checkout@v4
-      
+
       - name: Set up Java for publishing
         uses: actions/setup-java@v4
         with:
@@ -25,7 +25,10 @@ jobs:
           settings-path: ${{ github.workspace }}
           server-username: ${{ env.GITHUB_USER }}
           server-password: ${{ secrets.G_TOKEN }}
-        
+
+      - name: Install mason-21.jar to local Maven repository
+        run: mvn install:install-file -Dfile=${{ github.workspace }}/lib/mason-21.jar -DgroupId=sim -DartifactId=mason -Dversion=21 -Dpackaging=jar
+
       - name: Publish package
         run: mvn deploy -B -s $GITHUB_WORKSPACE/.m2/settings.xml
         env:
