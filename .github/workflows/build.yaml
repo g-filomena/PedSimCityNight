@@ -22,15 +22,15 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           server-id: github
-          settings-path: ${{ github.workspace }}
-          server-username: ${{ env.GITHUB_USER }}
-          server-password: ${{ secrets.G_TOKEN }}
+          settings-path: ${{ github.workspace }}/.m2  # Specify where your settings.xml file is
+          server-username: g-filomena
+          server-password: ${{ secrets.G_TOKEN }}  # Your GitHub token set as a secret
 
       - name: Install mason-21.jar to local Maven repository
         run: mvn install:install-file -Dfile=${{ github.workspace }}/lib/mason-21.jar -DgroupId=sim -DartifactId=mason -Dversion=21 -Dpackaging=jar
 
       - name: Publish package
-        run: mvn deploy -B -s $GITHUB_WORKSPACE/.m2/settings.xml
+        run: mvn deploy -B -s $GITHUB_WORKSPACE/.m2/settings.xml  # Make sure it references the correct settings.xml
         env:
-          GITHUB_USER: g-filomena
-          GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
+          GITHUB_USER: g-filomena  # GitHub Username
+          GITHUB_TOKEN: ${{ secrets.G_TOKEN }}  # GitHub Token
