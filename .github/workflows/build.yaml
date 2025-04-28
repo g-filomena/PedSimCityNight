@@ -22,14 +22,12 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           server-id: github
-          settings-path: ${{ github.workspace }} # location for the settings.xml file
-          server-username: g-filomena  # env variable name for username
+          settings-path: ${{ github.workspace }}
+          server-username: ${{ env.GITHUB_USER }}
           server-password: ${{ secrets.G_TOKEN }}
         
-      - name: Build with Maven
-      run: mvn -B package --file pom.xml
-      
       - name: Publish package
-        run: mvn clean -s $GITHUB_WORKSPACE/.m2/settings.xml
+        run: mvn deploy -B -s $GITHUB_WORKSPACE/.m2/settings.xml
         env:
-          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_USER: g-filomena
+          GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
