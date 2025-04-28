@@ -84,6 +84,29 @@
 
     <build>
         <plugins>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-install-plugin</artifactId>
+				<version>3.0.0-M1</version>
+				<executions>
+					<execution>
+						<id>install-mason</id>
+						<phase>initialize</phase> <!-- Run early in the build lifecycle -->
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<file>${project.basedir}/lib/mason-21.jar</file> <!-- Path to mason-21.jar -->
+							<groupId>sim</groupId>
+							<artifactId>mason</artifactId>
+							<version>21</version>
+							<packaging>jar</packaging>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		
 			<!-- UTF -->
 			<plugin>
                 <groupId>org.apache.maven.plugins</groupId>
