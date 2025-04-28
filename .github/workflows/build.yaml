@@ -25,12 +25,6 @@ jobs:
           settings-path: ${{ github.workspace }}
           server-username: ${{ env.GITHUB_USER }}
           server-password: ${{ secrets.G_TOKEN }}
-
-      - name: Install dependencies and mason-21
-        run: mvn clean install -B
-        env:
-          GITHUB_USER: g-filomena
-          GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
         
       - name: Publish package
         run: mvn deploy -B -s $GITHUB_WORKSPACE/.m2/settings.xml
