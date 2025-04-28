@@ -36,9 +36,9 @@ Along with:
 If the user desires to use the applet within Eclipse, for example, to explore the source files or to make changes, the following instructions should be followed:
 
 1. Download the raw content of the Github `PedSimCityNight` Repository, as a .zip file.
-2. Unzip the file and move the nested PedSimCityNight-Master folder wherever it is convenient. 
+2. Unzip the file and move the nested `PedSimCityNight-Master` folder wherever it is convenient. 
 3. Open Eclipse, and create a new Java project; any name will do.
-4. Right click on the project on the left-hand side *Package Explorer*. Select *Build Path*, *Link Source*, navigate to the PedSimCityNight-Master, navigate to and then select the folder *src/main/java* (without double clicking on it).
+4. Right click on the project on the left-hand side *Package Explorer*. Select *Build Path*, *Link Source*, navigate to the `PedSimCityNight-Master` folder, navigate to and then select the folder *src/main/java* (without double clicking on it).
 4. Import all the libraries mentioned above, manually, by right clicking on your project *Build Path*, *Add External Archives*.
 5. To execute the applet, right-click on teh class ```PedSimCity.applet```, *Run as Java Application*.
 6. Before pressing the *Run Simulation* button, click on *Other options* and copy-paste the entire path referring to the path *src/main/resources/* in the corresponding field. This is necessary for retrieving the input data.
