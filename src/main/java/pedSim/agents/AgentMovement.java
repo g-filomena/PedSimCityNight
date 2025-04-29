@@ -527,8 +527,8 @@ public class AgentMovement {
 	private void updateCounts() {
 		edgesWalkedSoFar.add(currentDirectedEdge);
 		currentEdge.incrementAgentCount();
-		agent.kmWalkedTot += currentEdge.getLength();
-		agent.kmWalkedDay += currentEdge.getLength();
+		agent.metersWalkedTot += currentEdge.getLength();
+		agent.metersWalkedDay += currentEdge.getLength();
 	}
 
 	/**
