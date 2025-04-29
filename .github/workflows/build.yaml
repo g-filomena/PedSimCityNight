@@ -15,38 +15,23 @@ jobs:
     steps:
       - name: Standard Checkout
         uses: actions/checkout@v4
-
-      - name: Set up Java for publishing
+      
+      - name: Set up Java
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
-          server-id: github
-          settings-path: ${{ github.workspace }}/.m2 
-          server-username: g-filomena  # GitHub Username
-          server-password: ${{ secrets.G_TOKEN }}  # GitHub token stored as secret
-
-      # - name: Publish package
-        # run: mvn deploy -B -s $GITHUB_WORKSPACE/.m2/settings.xml  # Correctly reference the settings.xml path
-        # env:
-          # GITHUB_USER: g-filomena  # GitHub Username
-          # GITHUB_TOKEN: ${{ secrets.G_TOKEN }}  # GitHub Token
-
-
-      # Step 2: Debugging step to list contents of the 'lib/' folder
-      - name: List files in lib folder (debugging step)
-        run: ls -alh ${{ github.workspace }}/lib
-
+      
       # Step 3: Install mason-21.jar to local Maven repository
       # Added -X for Maven debug output to catch any potential issues during installation
       - name: Install mason-21.jar to local Maven repository
-        run: mvn install:install-file -Dfile=${{ github.workspace }}/lib/mason-21.jar -DgroupId=sim -DartifactId=mason -Dversion=21 -Dpackaging=jar -X
+        run: mvn install:install-file -Dfile=${{ github.workspace }}/lib/mason-21.jar -DgroupId=sim -DartifactId=mason -Dversion=21 -Dpackaging=jar
 
       # Step 4: Publish to GitHub Packages
       - name: Publish to GitHub Packages
-        run: mvn --batch-mode deploy
+        run: mvn deploy -s $GITHUB_WORKSPACE/.m2/settings.xml
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Authenticate with GitHub Packages
-
+          GITHUB_USER: g-filomena
+          GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
 
 
