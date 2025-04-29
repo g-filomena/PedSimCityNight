@@ -1,9 +1,9 @@
 name: Release Package GITHUB
 
 on:
-  workflow_dispatch:
+  workflow_dispatch:  # Allows you to manually trigger the workflow
   release:
-    types: [created]
+    types: [created]  # Trigger when a new release is created
 
 jobs:
   publish:
@@ -13,18 +13,27 @@ jobs:
       packages: write  # Required to publish to GitHub Packages
     
     steps:
+      # Step 1: Set up Java for publishing to GitHub Packages
       - name: Set up Java for publishing to GitHub Packages
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
-      
+
+      # Step 2: Debugging step to list contents of the 'lib/' folder
+      - name: List files in lib folder (debugging step)
+        run: ls -alh ${{ github.workspace }}/lib
+
+      # Step 3: Install mason-21.jar to local Maven repository
+      # Added -X for Maven debug output to catch any potential issues during installation
       - name: Install mason-21.jar to local Maven repository
-        run: mvn install:install-file -Dfile=${{ github.workspace }}/lib/mason-21.jar -DgroupId=sim -DartifactId=mason -Dversion=21 -Dpackaging=jar
-      
+        run: mvn install:install-file -Dfile=${{ github.workspace }}/lib/mason-21.jar -DgroupId=sim -DartifactId=mason -Dversion=21 -Dpackaging=jar -X
+
+      # Step 4: Publish to GitHub Packages
       - name: Publish to GitHub Packages
         run: mvn --batch-mode deploy
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Authenticate with GitHub Packages
+
 
 
