@@ -28,15 +28,15 @@ Along with:
 ### Option 1: Run the model from terminal
 
 1. Install Java on your machine.
-2. Download the jar file **pedsimcityNight-1.0.3-jar-with-dependencies** wherever it is convenient.
+2. Download the jar file **pedsimcitynight-1.0.4-jar-with-dependencies** wherever it is convenient.
 3. Open the command prompt in the directory where the **.jar** file is placed.
 4. Run the command:
 
-`java -jar pedsimcityNight-1.0.3-jar-with-dependencies.jar`.
+`java -jar pedsimcitynight-1.0.4-jar-with-dependencies.jar`
 
 5. The applet should pop-up and log-messages should appear in the command prompt window.
 
-*This is the recommended option for running PedSimCity and it does not require the user to take any other step or to manually install the dependencies.*
+*This is the recommended option for running PedSimCityNight and it does not require the user to take any other step or to manually install the dependencies.*
 
 ### Option 2: Edit and Run the model in Eclipse
 
@@ -47,5 +47,5 @@ If the user desires to use the applet within Eclipse, to explore the source file
 3. Open Eclipse, and create a new Java project; any name will do.
 4. Right click on the project on the left-hand side **Package Explorer**. Select **Build Path**, **Link Source**, navigate to the **PedSimCityNight-Master** folder, navigate to and then select the folder **src/main/java** (without double clicking on it).
 5. Import all the libraries mentioned above, manually, by right clicking on your project **Build Path**, **Add External Archives**. 
-7. To execute the applet, right-click on teh class `PedSimCity.applet`, **Run as Java Application**.
+7. To execute the applet, right-click on the class `PedSimCityNight.applet`, **Run as Java Application**.
 8. Before pressing the **Run Simulation** button, click on **Other options** and copy-paste the entire path referring to the path **src/main/resources/** in the corresponding field. This is necessary for retrieving the input data.
