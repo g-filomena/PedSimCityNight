@@ -13,25 +13,18 @@ jobs:
       packages: write  # Required to publish to GitHub Packages
     
     steps:
-      - name: Standard Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Java for publishing
+      - name: Set up Java for publishing to GitHub Packages
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
-          server-id: github
-          settings-path: ${{ github.workspace }}/.m2 
-          server-username: g-filomena  # GitHub Username
-          server-password: ${{ secrets.G_TOKEN }}  # GitHub token stored as secret
-
+      
       - name: Install mason-21.jar to local Maven repository
         run: mvn install:install-file -Dfile=${{ github.workspace }}/lib/mason-21.jar -DgroupId=sim -DartifactId=mason -Dversion=21 -Dpackaging=jar
-
-      - name: Publish package
-        run: mvn deploy -B -s $GITHUB_WORKSPACE/.m2/settings.xml  # Correctly reference the settings.xml path
+      
+      - name: Publish to GitHub Packages
+        run: mvn --batch-mode deploy
         env:
-          GITHUB_USER: g-filomena  # GitHub Username
-          GITHUB_TOKEN: ${{ secrets.G_TOKEN }}  # GitHub Token
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 
