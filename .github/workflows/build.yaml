@@ -23,7 +23,6 @@ jobs:
           distribution: 'temurin'
       
       # Step 3: Install mason-21.jar to local Maven repository
-      # Added -X for Maven debug output to catch any potential issues during installation
       - name: Install mason-21.jar to local Maven repository
         run: mvn install:install-file -Dfile=${{ github.workspace }}/lib/mason-21.jar -DgroupId=sim -DartifactId=mason -Dversion=21 -Dpackaging=jar
 
