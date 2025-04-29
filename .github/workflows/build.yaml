@@ -1,9 +1,9 @@
 name: Release Package GITHUB
 
 on:
-  workflow_dispatch:  # Allows you to manually trigger the workflow
+  workflow_dispatch:
   release:
-    types: [created]  # Trigger when a new release is created
+    types: [created]
 
 jobs:
   publish:
@@ -13,12 +13,25 @@ jobs:
       packages: write  # Required to publish to GitHub Packages
     
     steps:
-      # Step 1: Set up Java for publishing to GitHub Packages
-      - name: Set up Java for publishing to GitHub Packages
+      - name: Standard Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java for publishing
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
+          server-id: github
+          settings-path: ${{ github.workspace }}/.m2 
+          server-username: g-filomena  # GitHub Username
+          server-password: ${{ secrets.G_TOKEN }}  # GitHub token stored as secret
+
+      # - name: Publish package
+        # run: mvn deploy -B -s $GITHUB_WORKSPACE/.m2/settings.xml  # Correctly reference the settings.xml path
+        # env:
+          # GITHUB_USER: g-filomena  # GitHub Username
+          # GITHUB_TOKEN: ${{ secrets.G_TOKEN }}  # GitHub Token
+
 
       # Step 2: Debugging step to list contents of the 'lib/' folder
       - name: List files in lib folder (debugging step)
