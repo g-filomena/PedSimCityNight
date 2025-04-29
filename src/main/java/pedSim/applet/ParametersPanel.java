@@ -102,6 +102,7 @@ public class ParametersPanel extends Frame {
 
 		localPathField.setBounds(X, y - 10, 350, 20);
 		add(localPathField);
+		localPathField.setText(null);
 	}
 
 	private void inputCityCentreRegions() {
@@ -148,8 +149,7 @@ public class ParametersPanel extends Frame {
 	 * corresponding parameters in the Parameters class.
 	 */
 	private void adjustParameters() {
-
-		if (localPathField.getText() != null) {
+		if (localPathField.getText() == null || localPathField.getText() == "") {
 			Pars.localPath = localPathField.getText();
 			Pars.javaProject = true;
 		}
