@@ -53,9 +53,9 @@ public class Agent implements Steppable {
 	NodeGraph lastDestination;
 	Random random = new Random();
 	protected AgentMovement agentMovement;
-	double kmWalkedTot;
+	double metersWalkedTot;
 	private double distanceNextDestination = 0.0;
-	public double kmWalkedDay = 0.0;
+	public double metersWalkedDay = 0.0;
 
 	public StringEnum.Vulnerable vulnerable;
 	private Graph agentNetwork;
@@ -410,8 +410,8 @@ public class Agent implements Steppable {
 	 *
 	 * @return The total distance the agent has walked in kilometers.
 	 */
-	public double getTotalKmWalked() {
-		return kmWalkedTot;
+	public double getTotalMetersWalked() {
+		return metersWalkedTot;
 	}
 
 	/**
@@ -419,8 +419,8 @@ public class Agent implements Steppable {
 	 *
 	 * @return The distance walked by the agent today in kilometers.
 	 */
-	public double getKmWalkedDay() {
-		return kmWalkedDay;
+	public double getMetersWalkedDay() {
+		return metersWalkedDay;
 	}
 
 	/**
