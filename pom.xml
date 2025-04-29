@@ -6,14 +6,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>uk.ac.liv.gdsl</groupId>
-    <artifactId>pedsimcityNight</artifactId>
-    <version>1.0.3</version>
+    <artifactId>pedsimcitynight</artifactId>
+    <version>1.0.4</version>
 
 	<name>${project.groupId}:${project.artifactId}</name>
     <description>
 		PedSimCity is an Agent-Based Model for simulating pedestrian movement in large urban areas that allow observing how pedestrian volumes vary between day and night.
     </description>
-    <url>https://github.com/g-filomena/PedSimCity</url>
+    <url>https://github.com/g-filomena/PedSimCityNight</url>
 	
 	<developers>
 		<developer>
@@ -28,12 +28,12 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
     </properties>
-	
+		
 	<distributionManagement>
 	   <repository>
 		 <id>github</id>
 		 <name>PedSimCityNight</name>
-		 <url>https://maven.pkg.github.com/g-filomena/PedSimCityNight/</url>
+		 <url>https://maven.pkg.github.com/g-filomena/PedSimCityNight</url>
 	   </repository>
 	</distributionManagement>
 	
@@ -92,12 +92,12 @@
 				<executions>
 					<execution>
 						<id>install-mason</id>
-						<phase>initialize</phase> <!-- Run early in the build lifecycle -->
+						<phase>initialize</phase> 
 						<goals>
 							<goal>install-file</goal>
 						</goals>
 						<configuration>
-							<file>${project.basedir}/lib/mason-21.jar</file> <!-- Path to mason-21.jar -->
+							<file>${project.basedir}/lib/mason-21.jar</file> 
 							<groupId>sim</groupId>
 							<artifactId>mason</artifactId>
 							<version>21</version>
@@ -129,7 +129,7 @@
 						<manifest>
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>lib/</classpathPrefix>
-							<mainClass>pedSim.applet.PedSimCityApplet</mainClass>
+							<mainClass>pedSim.applet.PedSimCityNightApplet</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
@@ -186,7 +186,7 @@
 							</descriptorRefs>
 							<archive>
 								<manifest>
-									<mainClass>pedSim.applet.PedSimCityApplet</mainClass>
+									<mainClass>pedSim.applet.PedSimCityNightApplet</mainClass>
 								</manifest>
 							</archive>
 						</configuration>
