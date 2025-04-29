@@ -95,13 +95,13 @@ public class AgentReleaseManager {
 
 	/**
 	 * Logs the current walking agent statistics, including the number of agents walking, expected versus walked
-	 * kilometers, and whether it is night or not.
+	 * Kilometres, and whether it is night or not.
 	 */
 	private void logWalkingAgents() {
-		logger.info(
-				String.format("TIME: %02d:%02d | Agents walking: %d | Expected Km: %.1f vs Walked Km: %.1f | Night: %s",
-						currentTime.getHour(), currentTime.getMinute(), state.agentsWalking.size(),
-						expectedKmWalkedSoFarToday / 1000.0, kmWalkedSoFarToday / 1000.0, state.isDark ? "Yes" : "No"));
+		logger.info(String.format(
+				"TIME: %02d:%02d | Agents walking: %d | Expected Km walked till this time: %.1f vs KM Walked today: %.1f | Night: %s",
+				currentTime.getHour(), currentTime.getMinute(), state.agentsWalking.size(), expectedKmWalkedSoFarToday,
+				kmWalkedSoFarToday, state.isDark ? "Yes" : "No"));
 	}
 
 	/**
@@ -147,7 +147,7 @@ public class AgentReleaseManager {
 		List<Agent> agents = new ArrayList<>(homeAgents);
 		// Sort agents by kmWalked in ascending order (less walked first) using parallel
 		// sort
-		agents.parallelStream().sorted(Comparator.comparingDouble(Agent::getTotalKmWalked))
+		agents.parallelStream().sorted(Comparator.comparingDouble(Agent::getTotalMetersWalked))
 				.collect(Collectors.toList());
 
 		Set<Agent> selectedAgents = agents.parallelStream().limit(nrAgents) // Select only the first 'nrAgents' after
@@ -162,19 +162,19 @@ public class AgentReleaseManager {
 	}
 
 	/**
-	 * Computes the total kilometers walked by all agents in the simulation up to the current time.
+	 * Computes the total kilometres walked by all agents in the simulation up to the current time.
 	 * 
-	 * @return the total kilometers walked by all agents.
+	 * @return the total kilometres walked by all agents.
 	 */
 	private double computeKmWalkedSoFar() {
-		return state.agentsList.stream().mapToDouble(Agent::getKmWalkedDay).sum();
+		return state.agentsList.stream().mapToDouble(Agent::getMetersWalkedDay).sum() / 1000;
 	}
 
 	/**
 	 * Resets the kmWalkedDay attribute for all agents in the simulation to zero.
 	 */
 	private void resetKmWalkedSoFar() {
-		state.agentsList.forEach(agent -> agent.kmWalkedDay = 0.0);
+		state.agentsList.forEach(agent -> agent.metersWalkedDay = 0.0);
 	}
 
 	/**
