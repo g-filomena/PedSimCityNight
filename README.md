@@ -28,7 +28,7 @@ Along with:
 ### Option 1: Run the model from terminal
 
 1. Install Java on your machine.
-2. Download the jar file **pedsimcitynight-1.0.4-jar-with-dependencies** wherever it is convenient.
+2. Download the jar file **pedsimcitynight-1.0.4-jar-with-dependencies** wherever it is convenient. This is found in the last package release [here](https://github.com/g-filomena/PedSimCityNight/packages/);
 3. Open the command prompt in the directory where the **.jar** file is placed.
 4. Run the command:
 
