@@ -21,5 +21,10 @@
 
 # Ignore the routes folder under notebooks/input
 notebooks/input/routes/
+notebooks/.ipynb_checkpoints/
 target/
 .settings/
+.m2/local_settings.xml
+.project
+.classpath
+
